@@ -414,8 +414,8 @@ Contenido del segundo capítulo..." onkeyup="updateCharCount(this, 'content-span
         </form>
 
         <div class="nav-links">
-            <a href="read-jusaeng.html" class="nav-link">📖 주생전 보기</a>
-            <a href="books.html" class="nav-link">📚 도서 목록</a>
+            <a href="books-dynamic.html" class="nav-link">📚 전체도서</a>
+            <a href="books.html" class="nav-link">기본도서</a>
             <a href="admin-simple.html" class="nav-link">🚀 간편업로드</a>
             <a href="index.html" class="nav-link">🏠 홈</a>
         </div>
@@ -603,8 +603,8 @@ Un día, el erudito conoció a una mujer hermosa. Junto con ella, se embarcó en
                 
                 setTimeout(() => {
                     if (confirm('업로드된 도서를 바로 확인하시겠습니까?')) {
-                        // 간단한 뷰어로 이동하거나 목록 페이지로 이동
-                        window.location.href = `books.html#${bookData.id}`;
+                        // 동적 도서 목록으로 이동
+                        window.location.href = `books-dynamic.html`;
                     }
                 }, 2000);
 

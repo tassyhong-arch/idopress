@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 - 이도 (동적)</title>
+    <meta name="description" content="한국 고전문학 대표작품들을 만나보세요">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">이도</a>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="books-dynamic.html" onclick="closeMobileMenu()" class="active">📚 전체도서</a></li>
+                    <li><a href="books.html" onclick="closeMobileMenu()">기본도서</a></li>
+                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
+                    <li><a href="#contact" onclick="closeMobileMenu()">문의</a></li>
+                    <li><a href="admin-test.html" onclick="closeMobileMenu()" style="color: #f59e0b;">🧪 테스트업로드</a></li>
+                    <li><a href="admin-simple.html" onclick="closeMobileMenu()" style="color: #10b981;">🚀 간편업로드</a></li>
+                    <li><a href="admin-multilingual.html" onclick="closeMobileMenu()" style="color: #2563eb;">⚙️ 관리자</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Books Hero -->
+    <section class="hero" style="padding: 150px 0 100px;">
+        <div class="container">
+            <h1>전체 도서 목록</h1>
+            <p>기본 도서와 업로드된 모든 도서를 확인하세요</p>
+        </div>
+    </section>
+
+    <!-- Dynamic Books Section -->
+    <section class="books">
+        <div class="container">
+            <!-- 업로드된 테스트 도서들 -->
+            <div id="uploadedBooksSection" style="display: none;">
+                <h2 class="section-title">🧪 업로드된 테스트 도서</h2>
+                <div class="books-grid" id="uploadedBooksGrid">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+
+            <!-- 기본 도서들 -->
+            <h2 class="section-title">📚 기본 도서</h2>
+            <div class="books-grid">
+                <div class="book-card">
+                    <div class="book-emoji">🌸</div>
+                    <h3>춘향전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">조선시대 배경의 영원한 사랑 이야기. 성춘향과 이몽룡의 순수한 사랑과 신분을 초월한 진정한 사랑의 의미를 그린 대표적인 판소리계 소설입니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('chunhyang')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🌊</div>
+                    <h3>심청전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">효녀 심청이의 숭고한 효심을 그린 감동적인 작품. 아버지의 눈을 뜨게 하기 위해 자신을 희생하는 딸의 숭고한 사랑을 담은 한국 문학의 걸작입니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('simcheong')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🏠</div>
+                    <h3>흥부전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">착한 마음씨의 흥부와 욕심 많은 놀부의 대조를 통해 선악의 교훈을 전하는 작품. 박 타는 흥부의 이야기로 널리 알려진 권선징악의 대표작입니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('heungbu')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🌙</div>
+                    <h3>주생전</h3>
+                    <p class="book-author">권필(權韠, 1569-1612)</p>
+                    <p class="book-description">조선 중기 문인 권필이 지은 중국 소설. 주생이라는 선비가 배도라는 기녀와 만나 펼치는 환상적인 사랑 이야기를 담고 있습니다. 다국어 지원으로 제공됩니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('jusaeng')">📖 한국어</button>
+                        <button class="lang-button" onclick="readBook('jusaeng')">🇺🇸 English</button>
+                        <button class="lang-button" onclick="readBook('jusaeng')">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="readBook('jusaeng')">🇪🇸 Español</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="features" style="background: #f8fafc;">
+        <div class="container">
+            <h2 class="section-title">도서 통계</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>총 도서 수</h3>
+                    <p id="totalBooksCount">4</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧪</div>
+                    <h3>업로드된 테스트 도서</h3>
+                    <p id="testBooksCount">0</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>다국어 지원</h3>
+                    <p>4개 언어</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>새로운 도서 추가</h2>
+            <p>테스트 업로드 시스템으로 새로운 도서를 쉽게 추가하세요</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a href="admin-test.html" class="cta-button" style="background: #f59e0b;">🧪 테스트 업로드</a>
+                <a href="admin-simple.html" class="cta-button" style="background: #10b981;">🚀 간편 업로드</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>이도</h3>
+                    <p>한국 고전문학의 아름다움을 현대적으로 재해석한 디지털 도서관</p>
+                </div>
+                <div class="footer-section">
+                    <h3>도서 목록</h3>
+                    <ul>
+                        <li><a href="#" onclick="readBook('chunhyang')">춘향전</a></li>
+                        <li><a href="#" onclick="readBook('simcheong')">심청전</a></li>
+                        <li><a href="#" onclick="readBook('heungbu')">흥부전</a></li>
+                        <li><a href="#" onclick="readBook('jusaeng')">주생전</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>관리자</h3>
+                    <ul>
+                        <li><a href="admin-test.html">테스트 업로드</a></li>
+                        <li><a href="admin-simple.html">간편 업로드</a></li>
+                        <li><a href="admin-multilingual.html">고급 관리자</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section" id="contact">
+                    <h3>연락처</h3>
+                    <p>📧 contact@idopress.co.kr</p>
+                    <p>📞 02-1234-5678</p>
+                    <p>🌐 idopress.co.kr</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 이도. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        // 업로드된 도서들을 동적으로 표시
+        function loadUploadedBooks() {
+            const testBooks = JSON.parse(localStorage.getItem('testBooks') || '[]');
+            const uploadedBooksSection = document.getElementById('uploadedBooksSection');
+            const uploadedBooksGrid = document.getElementById('uploadedBooksGrid');
+            const testBooksCount = document.getElementById('testBooksCount');
+            const totalBooksCount = document.getElementById('totalBooksCount');
+            
+            if (testBooks.length > 0) {
+                uploadedBooksSection.style.display = 'block';
+                uploadedBooksGrid.innerHTML = '';
+                
+                testBooks.forEach((book, index) => {
+                    const bookCard = createBookCard(book, index);
+                    uploadedBooksGrid.appendChild(bookCard);
+                });
+                
+                // 통계 업데이트
+                testBooksCount.textContent = testBooks.length;
+                totalBooksCount.textContent = 4 + testBooks.length;
+            } else {
+                uploadedBooksSection.style.display = 'none';
+                testBooksCount.textContent = '0';
+                totalBooksCount.textContent = '4';
+            }
+        }
+        
+        // 도서 카드 생성
+        function createBookCard(book, index) {
+            const bookCard = document.createElement('div');
+            bookCard.className = 'book-card';
+            
+            const emoji = book.emoji || '📖';
+            const title = book.title?.korean || '제목 없음';
+            const author = book.author?.korean || '작자 미상';
+            const description = book.description?.korean || '설명 없음';
+            
+            bookCard.innerHTML = `
+                <div class="book-emoji">${emoji}</div>
+                <h3>${title}</h3>
+                <p class="book-author">${author}</p>
+                <p class="book-description">${description}</p>
+                <div class="book-languages">
+                    <button class="lang-button" onclick="readTestBook('${book.id}', 'korean')">📖 한국어</button>
+                    ${book.title?.english ? `<button class="lang-button" onclick="readTestBook('${book.id}', 'english')">🇺🇸 English</button>` : '<button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>'}
+                    ${book.title?.spanish ? `<button class="lang-button" onclick="readTestBook('${book.id}', 'spanish')">🇪🇸 Español</button>` : '<button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>'}
+                    ${book.title?.japanese ? `<button class="lang-button" onclick="readTestBook('${book.id}', 'japanese')">🇯🇵 日本語</button>` : '<button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>'}
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                    <button class="lang-button" onclick="deleteTestBook('${book.id}')" style="background: #ef4444; font-size: 0.9rem;">🗑️ 삭제</button>
+                </div>
+            `;
+            
+            return bookCard;
+        }
+        
+        // 테스트 도서 읽기
+        function readTestBook(bookId, language) {
+            // 범용 리더기로 이동 (URL 파라미터로 도서 ID와 언어 전달)
+            window.location.href = `reader-universal.html?book=${bookId}&lang=${language}`;
+        }
+        
+        // 테스트 도서 삭제
+        function deleteTestBook(bookId) {
+            if (confirm('정말로 이 도서를 삭제하시겠습니까?')) {
+                let testBooks = JSON.parse(localStorage.getItem('testBooks') || '[]');
+                testBooks = testBooks.filter(book => book.id !== bookId);
+                localStorage.setItem('testBooks', JSON.stringify(testBooks));
+                loadUploadedBooks(); // 목록 새로고침
+                alert('도서가 삭제되었습니다.');
+            }
+        }
+        
+        // 페이지 로드 시 업로드된 도서들 표시
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUploadedBooks();
+            
+            // 5초마다 업데이트 체크 (실시간 반영)
+            setInterval(loadUploadedBooks, 5000);
+        });
+        
+        // localStorage 변경 감지 (다른 탭에서 업로드한 경우)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'testBooks') {
+                loadUploadedBooks();
+            }
+        });
+    </script>
+</body>
+</html>

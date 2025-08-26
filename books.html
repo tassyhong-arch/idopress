@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 - 이도</title>
+    <meta name="description" content="한국 고전문학 대표작품들을 만나보세요">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">이도</a>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="books.html" onclick="closeMobileMenu()" class="active">도서</a></li>
+                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
+                    <li><a href="#contact" onclick="closeMobileMenu()">문의</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Books Hero -->
+    <section class="hero" style="padding: 150px 0 100px;">
+        <div class="container">
+            <h1>한국 고전문학 도서관</h1>
+            <p>시대를 초월한 감동, 영원한 이야기들을 만나보세요</p>
+        </div>
+    </section>
+
+    <!-- Featured Books -->
+    <section class="books">
+        <div class="container">
+            <h2 class="section-title">대표 작품</h2>
+            <div class="books-grid">
+                <div class="book-card">
+                    <div class="book-emoji">🌸</div>
+                    <h3>춘향전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">조선시대 배경의 영원한 사랑 이야기. 성춘향과 이몽룡의 순수한 사랑과 신분을 초월한 진정한 사랑의 의미를 그린 대표적인 판소리계 소설입니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('chunhyang')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🌊</div>
+                    <h3>심청전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">효녀 심청이의 숭고한 효심을 그린 감동적인 작품. 아버지의 눈을 뜨게 하기 위해 자신을 희생하는 딸의 숭고한 사랑을 담은 한국 문학의 걸작입니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('simcheong')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🏠</div>
+                    <h3>흥부전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">착한 마음씨의 흥부와 욕심 많은 놀부의 대조를 통해 선악의 교훈을 전하는 작품. 박 타는 흥부의 이야기로 널리 알려진 권선징악의 대표작입니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('heungbu')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🌙</div>
+                    <h3>주생전</h3>
+                    <p class="book-author">권필(權韠, 1569-1612)</p>
+                    <p class="book-description">조선 중기 문인 권필이 지은 중국 소설. 주생이라는 선비가 배도라는 기녀와 만나 펼치는 환상적인 사랑 이야기를 담고 있습니다. 다국어 지원으로 제공됩니다.</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('jusaeng')">📖 한국어</button>
+                        <button class="lang-button" onclick="readBook('jusaeng')">🇺🇸 English</button>
+                        <button class="lang-button" onclick="readBook('jusaeng')">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="readBook('jusaeng')">🇪🇸 Español</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- More Books Coming Soon -->
+    <section class="features" style="background: #f8fafc;">
+        <div class="container">
+            <h2 class="section-title">곧 만나볼 작품들</h2>
+            <div class="features-grid">
+                <div class="feature-card" style="background: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <div class="feature-icon">🏰</div>
+                    <h3>토끼전</h3>
+                    <p>토끼와 별주부의 재치 넘치는 이야기</p>
+                </div>
+                <div class="feature-card" style="background: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <div class="feature-icon">👑</div>
+                    <h3>장화홍련전</h3>
+                    <p>계모의 박해를 받은 자매의 슬픈 이야기</p>
+                </div>
+                <div class="feature-card" style="background: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <div class="feature-icon">⚔️</div>
+                    <h3>홍길동전</h3>
+                    <p>조선시대 의적 홍길동의 영웅담</p>
+                </div>
+                <div class="feature-card" style="background: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <div class="feature-icon">🌙</div>
+                    <h3>금오신화</h3>
+                    <p>김시습의 전기소설 모음집</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>이도</h4>
+                    <p>한국 고전문학을 세계와 공유하는<br>디지털 문학 공간입니다.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>서비스</h4>
+                    <p><a href="books.html">전자책 서비스</a></p>
+                    <p><a href="#" onclick="showComingSoon()">작가 소개</a></p>
+                    <p><a href="#" onclick="showComingSoon()">문학 해설</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>정보</h4>
+                    <p><a href="#" onclick="showComingSoon()">이용약관</a></p>
+                    <p><a href="#" onclick="showComingSoon()">개인정보처리방침</a></p>
+                    <p><a href="#" onclick="showContact()">문의하기</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>연락처</h4>
+                    <p>이메일: contact@idopress.com</p>
+                    <p>전화: 02-1234-5678</p>
+                    <p>주소: 서울시 중구 세종대로 110</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 이도. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        function readBook(bookId) {
+            // 이북 리더로 이동
+            const bookUrls = {
+                'chunhyang': 'read-chunhyang.html',
+                'simcheong': 'read-simcheong.html', 
+                'heungbu': 'read-heungbu.html'
+            };
+            
+            if (bookUrls[bookId]) {
+                // 모든 책이 준비됨 (샘플 컨텐츠)
+                window.location.href = bookUrls[bookId];
+            } else {
+                alert(`📚 "${getBookName(bookId)}" 서비스는 곧 제공될 예정입니다!`);
+            }
+        }
+        
+        function getBookName(bookId) {
+            const names = {
+                'chunhyang': '춘향전',
+                'simcheong': '심청전',
+                'heungbu': '흥부전'
+            };
+            return names[bookId] || bookId;
+        }
+
+        function showBookDetail(bookName) {
+            alert(`📚 "${bookName}" 전문 서비스는 곧 제공될 예정입니다!\n\n현재 준비 중인 기능:\n• 전문 텍스트 읽기\n• 오디오북 서비스\n• 다국어 번역\n• 상세 해설\n\n기대해 주세요! 🌟`);
+        }
+    </script>
+</body>
+</html>

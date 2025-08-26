@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 이도</title>
+    <meta name="description" content="이도 웹사이트 콘텐츠 관리">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin: -80px -20px 3rem;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            background: #f1f5f9;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .admin-tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .admin-section {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+            font-family: 'Noto Serif KR', serif;
+            line-height: 1.8;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-success {
+            background: #059669;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .book-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .book-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .book-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #2563eb;
+        }
+
+        .book-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .preview-area {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 1rem;
+            font-family: 'Noto Serif KR', serif;
+            line-height: 1.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #2563eb;
+            background: #f8fafc;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+            }
+            
+            .book-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index-simple.html" class="logo">이도</a>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="books.html" onclick="closeMobileMenu()">도서</a></li>
+                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
+                    <li><a href="admin.html" onclick="closeMobileMenu()" class="active">관리자</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>📚 이도 관리자 페이지</h1>
+            <p>한국 고전문학 콘텐츠 관리 시스템</p>
+        </div>
+
+        <!-- 통계 대시보드 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalBooks">3</div>
+                <div>등록된 도서</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalViews">1,247</div>
+                <div>총 조회수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">89</div>
+                <div>누적 사용자</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayViews">23</div>
+                <div>오늘 조회수</div>
+            </div>
+        </div>
+
+        <!-- 관리자 메뉴 -->
+        <div class="admin-nav">
+            <button class="admin-tab active" onclick="showSection('books')">📖 도서 관리</button>
+            <button class="admin-tab" onclick="showSection('add-book')">➕ 새 도서 추가</button>
+            <button class="admin-tab" onclick="showSection('settings')">⚙️ 사이트 설정</button>
+            <button class="admin-tab" onclick="showSection('analytics')">📊 분석</button>
+        </div>
+
+        <!-- 도서 관리 섹션 -->
+        <div id="books-section" class="admin-section active">
+            <h2>📚 등록된 도서 목록</h2>
+            <div class="book-list" id="booksList">
+                <div class="book-item">
+                    <div class="book-info">
+                        <h3>🌸 춘향전</h3>
+                        <p>작자 미상 • 조선시대 판소리계 소설 • 5개 장</p>
+                        <p>상태: <span style="color: #059669; font-weight: 600;">게시됨</span> • 조회수: 456회</p>
+                    </div>
+                    <div class="book-actions">
+                        <button class="btn" onclick="editBook('chunhyang')">수정</button>
+                        <button class="btn" onclick="previewBook('chunhyang')">미리보기</button>
+                        <button class="btn btn-danger" onclick="deleteBook('chunhyang')">삭제</button>
+                    </div>
+                </div>
+                
+                <div class="book-item">
+                    <div class="book-info">
+                        <h3>🌊 심청전</h3>
+                        <p>작자 미상 • 조선시대 판소리계 소설 • 준비 중</p>
+                        <p>상태: <span style="color: #d97706; font-weight: 600;">작업 중</span> • 조회수: 234회</p>
+                    </div>
+                    <div class="book-actions">
+                        <button class="btn" onclick="editBook('simcheong')">수정</button>
+                        <button class="btn" onclick="previewBook('simcheong')">미리보기</button>
+                        <button class="btn btn-danger" onclick="deleteBook('simcheong')">삭제</button>
+                    </div>
+                </div>
+                
+                <div class="book-item">
+                    <div class="book-info">
+                        <h3>🏠 흥부전</h3>
+                        <p>작자 미상 • 조선시대 판소리계 소설 • 준비 중</p>
+                        <p>상태: <span style="color: #d97706; font-weight: 600;">작업 중</span> • 조회수: 189회</p>
+                    </div>
+                    <div class="book-actions">
+                        <button class="btn" onclick="editBook('heungbu')">수정</button>
+                        <button class="btn" onclick="previewBook('heungbu')">미리보기</button>
+                        <button class="btn btn-danger" onclick="deleteBook('heungbu')">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 새 도서 추가 섹션 -->
+        <div id="add-book-section" class="admin-section">
+            <h2>➕ 새로운 도서 추가</h2>
+            
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="bookTitle">도서 제목</label>
+                    <input type="text" id="bookTitle" name="bookTitle" placeholder="예: 홍길동전" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookAuthor">작가</label>
+                    <input type="text" id="bookAuthor" name="bookAuthor" placeholder="예: 허균" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookEmoji">대표 이모지</label>
+                    <input type="text" id="bookEmoji" name="bookEmoji" placeholder="예: ⚔️" maxlength="2">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookDescription">작품 소개</label>
+                    <textarea id="bookDescription" name="bookDescription" placeholder="작품에 대한 간단한 소개를 입력하세요" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookContent">본문 내용</label>
+                    <textarea id="bookContent" name="bookContent" placeholder="챕터별로 작성해주세요. 각 챕터는 === 제목 === 형식으로 구분합니다." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookCategory">분류</label>
+                    <select id="bookCategory" name="bookCategory" required>
+                        <option value="">선택해주세요</option>
+                        <option value="classical">고전소설</option>
+                        <option value="poetry">고전시가</option>
+                        <option value="history">역사서</option>
+                        <option value="philosophy">철학서</option>
+                    </select>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    ✅ 도서가 성공적으로 추가되었습니다!
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    ❌ 오류가 발생했습니다. 다시 시도해주세요.
+                </div>
+                
+                <button type="submit" class="btn btn-success">📚 도서 추가하기</button>
+                <button type="button" class="btn" onclick="previewNewBook()">👁️ 미리보기</button>
+            </form>
+            
+            <div class="preview-area" id="previewArea" style="display: none;">
+                <h3>📖 미리보기</h3>
+                <div id="previewContent"></div>
+            </div>
+        </div>
+
+        <!-- 사이트 설정 섹션 -->
+        <div id="settings-section" class="admin-section">
+            <h2>⚙️ 사이트 설정</h2>
+            
+            <div class="form-group">
+                <label>사이트 제목</label>
+                <input type="text" value="이도 - 한국 고전문학의 디지털 공간">
+            </div>
+            
+            <div class="form-group">
+                <label>사이트 설명</label>
+                <textarea>한국 고전문학을 4개 언어로 만나는 디지털 도서관</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>연락처 이메일</label>
+                <input type="email" value="contact@idopress.com">
+            </div>
+            
+            <div class="form-group">
+                <label>전화번호</label>
+                <input type="tel" value="02-1234-5678">
+            </div>
+            
+            <div class="form-group">
+                <label>주소</label>
+                <input type="text" value="서울시 중구 세종대로 110">
+            </div>
+            
+            <button class="btn btn-success" onclick="saveSettings()">💾 설정 저장</button>
+        </div>
+
+        <!-- 분석 섹션 -->
+        <div id="analytics-section" class="admin-section">
+            <h2>📊 사이트 분석</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">67%</div>
+                    <div>모바일 사용자</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4.2분</div>
+                    <div>평균 체류시간</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2.3</div>
+                    <div>페이지/세션</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">23%</div>
+                    <div>재방문율</div>
+                </div>
+            </div>
+            
+            <h3>📚 인기 도서 순위</h3>
+            <div class="book-list">
+                <div class="book-item">
+                    <div class="book-info">
+                        <h3>1. 춘향전</h3>
+                        <p>456회 조회 • 평균 읽기 시간: 12분</p>
+                    </div>
+                </div>
+                <div class="book-item">
+                    <div class="book-info">
+                        <h3>2. 심청전</h3>
+                        <p>234회 조회 • 평균 읽기 시간: 8분</p>
+                    </div>
+                </div>
+                <div class="book-item">
+                    <div class="book-info">
+                        <h3>3. 흥부전</h3>
+                        <p>189회 조회 • 평균 읽기 시간: 7분</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>이도</h4>
+                    <p>한국 고전문학을 세계와 공유하는<br>디지털 문학 공간입니다.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>관리자</h4>
+                    <p><a href="#books-section">도서 관리</a></p>
+                    <p><a href="#add-book-section">새 도서 추가</a></p>
+                    <p><a href="#settings-section">사이트 설정</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>지원</h4>
+                    <p><a href="#" onclick="showComingSoon()">도움말</a></p>
+                    <p><a href="#" onclick="showComingSoon()">문의하기</a></p>
+                    <p><a href="#" onclick="showComingSoon()">버그 리포트</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>연락처</h4>
+                    <p>이메일: contact@idopress.com</p>
+                    <p>전화: 02-1234-5678</p>
+                    <p>주소: 서울시 중구 세종대로 110</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 이도. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        // 섹션 전환
+        function showSection(sectionName) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 모든 섹션 숨김
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 선택된 탭과 섹션 활성화
+            event.target.classList.add('active');
+            document.getElementById(sectionName + '-section').classList.add('active');
+        }
+
+        // 도서 편집
+        function editBook(bookId) {
+            alert(`📝 "${bookId}" 편집 기능은 개발 중입니다.\n\n현재는 새 도서 추가 탭에서\n새로운 콘텐츠를 작성해보세요!`);
+        }
+
+        // 도서 미리보기
+        function previewBook(bookId) {
+            if (bookId === 'chunhyang') {
+                window.open('read-chunhyang.html', '_blank');
+            } else {
+                alert(`👁️ "${bookId}" 미리보기는 준비 중입니다.\n\n🌸 춘향전 미리보기는 가능합니다!`);
+            }
+        }
+
+        // 도서 삭제
+        function deleteBook(bookId) {
+            if (confirm(`정말로 "${bookId}" 도서를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
+                alert('🗑️ 삭제 기능은 개발 중입니다.\n안전을 위해 실제 삭제는 비활성화되어 있습니다.');
+            }
+        }
+
+        // 새 도서 미리보기
+        function previewNewBook() {
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            const description = document.getElementById('bookDescription').value;
+            const content = document.getElementById('bookContent').value;
+            
+            if (!title || !content) {
+                alert('제목과 내용을 입력해주세요.');
+                return;
+            }
+            
+            const previewArea = document.getElementById('previewArea');
+            const previewContent = document.getElementById('previewContent');
+            
+            previewContent.innerHTML = `
+                <h2>${title}</h2>
+                <p><strong>작가:</strong> ${author || '미상'}</p>
+                <p><strong>설명:</strong> ${description}</p>
+                <hr>
+                <div style="white-space: pre-line; font-family: 'Noto Serif KR', serif;">${content}</div>
+            `;
+            
+            previewArea.style.display = 'block';
+            previewArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 새 도서 추가
+        document.getElementById('addBookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            
+            if (!title || !author) {
+                showMessage('error', '제목과 작가는 필수 입력 항목입니다.');
+                return;
+            }
+            
+            // 실제로는 서버로 데이터를 전송
+            showMessage('success', `"${title}" 도서가 성공적으로 추가되었습니다!`);
+            
+            // 폼 초기화
+            this.reset();
+            document.getElementById('previewArea').style.display = 'none';
+        });
+
+        // 메시지 표시
+        function showMessage(type, text) {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (type === 'success') {
+                successMsg.textContent = text;
+                successMsg.style.display = 'block';
+                errorMsg.style.display = 'none';
+            } else {
+                errorMsg.textContent = text;
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            }
+            
+            // 3초 후 메시지 숨김
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+                errorMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        // 설정 저장
+        function saveSettings() {
+            showMessage('success', '설정이 성공적으로 저장되었습니다!');
+        }
+
+        // 통계 애니메이션
+        document.addEventListener('DOMContentLoaded', function() {
+            // 숫자 카운트 애니메이션 (실제로는 서버에서 데이터를 가져옴)
+            animateNumber('totalBooks', 3);
+            animateNumber('totalViews', 1247);
+            animateNumber('totalUsers', 89);
+            animateNumber('todayViews', 23);
+        });
+
+        function animateNumber(elementId, targetNumber) {
+            const element = document.getElementById(elementId);
+            let current = 0;
+            const increment = targetNumber / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= targetNumber) {
+                    current = targetNumber;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, 30);
+        }
+    </script>
+</body>
+</html>

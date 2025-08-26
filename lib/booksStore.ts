@@ -34,7 +34,7 @@ export interface Book {
   descriptions?: {
     한국어: string;
     English: string;
-    일본語: string;
+    日本語: string;
     Español: string;
   };
   ebookContent?: {
@@ -72,19 +72,19 @@ const initialBooks: Book[] = [
     titles: {
       한국어: "춘향전",
       English: "The Tale of Chunhyang",
-      일본어: "春香伝",
+      日本語: "春香伝",
       Español: "La Historia de Chunhyang"
     },
     authors: {
       한국어: "작자 미상",
       English: "Anonymous",
-      일본어: "作者未詳",
+      日本語: "作者未詳",
       Español: "Anónimo"
     },
     descriptions: {
       한국어: "사랑과 의리를 그린 조선시대 대표 고전소설입니다. 춘향과 몽룡의 사랑 이야기를 통해 신분제 사회의 모순을 비판한 작품입니다.",
       English: "A representative classical novel of the Joseon Dynasty depicting love and loyalty. This work criticizes the contradictions of a status-based society through the love story of Chunhyang and Mongryong.",
-      일본語: "愛と義理を描いた朝鮮時代の代表的な古典小説です。春香と夢龍の愛の物語を通じて身分制社会の矛盾を批判した作品です。",
+      日本語: "愛と義理を描いた朝鮮時代の代表的な古典小説です。春香と夢龍の愛の物語を通じて身分制社会の矛盾を批判した作品です。",
       Español: "Una novela clásica representativa de la dinastía Joseon que retrata el amor y la lealtad. Esta obra critica las contradicciones de una sociedad basada en el estatus a través de la historia de amor de Chunhyang y Mongryong."
     },
     ebookContent: {
@@ -100,7 +100,7 @@ const initialBooks: Book[] = [
         "Chapter 3 - Separation and Trials\n\nWhen Mongryong's father was transferred to Hanyang, Mongryong had to leave with him. Despite the pain of separation, the two promised to meet again. However, the newly appointed Byeon Hakdo fell for Chunhyang's beauty and tried to make her his concubine, but Chunhyang refused and was imprisoned.",
         "Chapter 4 - Reunion and Happy Ending\n\nMongryong, who passed the state examination, became a secret royal inspector and returned to Namwon. When he heard that Chunhyang was imprisoned, the angry Mongryong punished Byeon Hakdo and rescued Chunhyang. The two finally held an official wedding ceremony and lived happily ever after."
       ],
-      일본語: [
+      日本語: [
         "第1章 - 春香と夢龍の出会い\n\n朝鮮後期、南原の地に春香という妓生の娘がいた。春香は容貌が非常に美しく、心根も優しかった。ある春の日、春香がブランコに乗っているとき、漢陽から下ってきた李夢龍がその姿を見て一目で恋に落ちた。\n\n夢龍は南原府使の息子で、風采が良く学問に優れた青年だった。二人は初対面から互いに深い印象を受け、頻繁に会うようになって愛に落ちた。",
         "第2章 - 愛の誓い\n\n春香と夢龍は密かに婚礼を挙げた。正式な婚礼ではなかったが、二人の心だけは真実だった。彼らは互いへの変わらぬ愛を誓った。\n\n'春香よ、今は身分が違うが、いつかは堂々と君を妻に迎えよう。'\n'若様、私はどなた試練が来ても若様だけをお待ちします。'",
         "第3章 - 別れと試練\n\n夢龍の父が漢陽に転任することになり、夢龍も一緒に去らなければならなかった。別れの痛みの中でも、二人は再会を約束した。しかし新しく赴任した卞学道は春香の美貌に心を奪われ、側室にしようとしたが、春香はこれを拒否して牢獄に入れられた。",
@@ -132,13 +132,13 @@ const initialBooks: Book[] = [
     titles: {
       한국어: "홍길동전",
       English: "The Tale of Hong Gil-dong",
-      일본어: "洪吉童伝",
+      日本語: "洪吉童伝",
       Español: "La Historia de Hong Gil-dong"
     },
     authors: {
       한국어: "허균",
       English: "Heo Gyun",
-      일본어: "許筠",
+      日本語: "許筠",
       Español: "Heo Gyun"
     },
     descriptions: {
@@ -160,7 +160,7 @@ const initialBooks: Book[] = [
         "Hong Gil-dong Tale Chapter 3 content.",
         "Hong Gil-dong Tale Chapter 4 content."
       ],
-      일본語: [
+      日本語: [
         "洪吉童伝第1章の内容です。",
         "洪吉童伝第2章の内容です。",
         "洪吉童伝第3章の内容です。",
@@ -192,13 +192,13 @@ const initialBooks: Book[] = [
     titles: {
       한국어: "구운몽",
       English: "The Cloud Dream of Nine",
-      일본語: "九雲夢",
+      日本語: "九雲夢",
       Español: "El Sueño de las Nueve Nubes"
     },
     authors: {
       한국어: "김만중",
       English: "Kim Man-jung",
-      일본어: "金万重",
+      日本語: "金万重",
       Español: "Kim Man-jung"
     },
     descriptions: {
@@ -226,13 +226,13 @@ const initialBooks: Book[] = [
     titles: {
       한국어: "심청전",
       English: "The Tale of Sim Cheong",
-      일본語: "沈清伝",
+      日本語: "沈清伝",
       Español: "La Historia de Sim Cheong"
     },
     authors: {
       한국어: "작자 미상",
       English: "Anonymous",
-      일본어: "作者未詳",
+      日本語: "作者未詳",
       Español: "Anónimo"
     },
     descriptions: {
@@ -260,13 +260,13 @@ const initialBooks: Book[] = [
     titles: {
       한국어: "흥부전",
       English: "The Tale of Heungbu",
-      일본語: "興夫伝",
+      日本語: "興夫伝",
       Español: "La Historia de Heungbu"
     },
     authors: {
       한국어: "작자 미상",
       English: "Anonymous",
-      일본어: "作者未詳",
+      日本語: "作者未詳",
       Español: "Anónimo"
     },
     descriptions: {
@@ -294,13 +294,13 @@ const initialBooks: Book[] = [
     titles: {
       한국어: "사씨남정기",
       English: "The History of Lady Sa",
-      일본語: "謝氏南征記",
+      日本語: "謝氏南征記",
       Español: "La Historia de la Señora Sa"
     },
     authors: {
       한국어: "김만중",
       English: "Kim Man-jung",
-      일본어: "金万重",
+      日本語: "金万重",
       Español: "Kim Man-jung"
     },
     descriptions: {

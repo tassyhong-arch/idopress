@@ -295,62 +295,53 @@ export default function EbookReader({ bookId }: EbookReaderProps) {
     }
   };
 
-  // 언어 변경 핸들러 - 완전히 새로 작성하여 확실하게 작동하도록 수정
+  // 언어 변경 핸들러 - 완전히 개선된 버전
   const handleLanguageChange = (targetLanguage: string) => {
-    console.log(`[언어 변경 시작] ${currentLanguage} → ${targetLanguage}`);
+    console.log(`[언어 변경 요청] ${currentLanguage} → ${targetLanguage}`);
 
-    // 마운트 상태 확인
-    if (!mountedRef.current) {
-      console.error('컴포넌트가 마운트되지 않음');
+    // 기본 유효성 검사
+    if (!mountedRef.current || !book || !book.content) {
+      console.error('언어 변경 불가: 컴포넌트 또는 데이터 없음');
       return;
     }
 
-    // 도서 및 콘텐츠 유효성 확인
-    if (!book || !book.content) {
-      console.error('도서 데이터 없음');
-      return;
-    }
-
-    // 동일한 언어 체크
+    // 동일 언어 체크
     if (currentLanguage === targetLanguage) {
-      console.log('이미 같은 언어입니다');
+      console.log('이미 선택된 언어입니다');
       return;
     }
 
     // 지원 언어 확인
     if (!book.content[targetLanguage]) {
       console.error(`지원하지 않는 언어: ${targetLanguage}`);
+      console.log('사용 가능한 언어:', Object.keys(book.content));
       return;
     }
 
-    console.log('언어 변경 진행...');
+    console.log('언어 변경 진행 중...');
 
-    // 새 언어의 콘텐츠 길이 확인
+    // React 18의 batching을 활용한 상태 업데이트
     const newContent = book.content[targetLanguage];
     const maxPage = newContent.length - 1;
+    const adjustedPage = Math.min(currentPage, maxPage);
 
-    // 현재 페이지가 새 언어 콘텐츠 범위를 벗어나면 조정
-    let newPage = currentPage;
-    if (currentPage > maxPage) {
-      newPage = maxPage;
-      console.log(`페이지 조정: ${currentPage} → ${newPage}`);
-    }
-
-    // 상태 업데이트
+    // 즉시 상태 업데이트 (React 18에서는 자동으로 batching됨)
     setCurrentLanguage(targetLanguage);
-    if (newPage !== currentPage) {
-      setCurrentPage(newPage);
+    
+    if (adjustedPage !== currentPage) {
+      setCurrentPage(adjustedPage);
+      console.log(`페이지 조정: ${currentPage} → ${adjustedPage}`);
     }
 
-    // 스크롤 맨 위로 이동
+    // 스크롤 맨 위로 이동 (다음 렌더 사이클에서 실행)
     setTimeout(() => {
-      if (contentContainerRef.current) {
+      if (mountedRef.current && contentContainerRef.current) {
         contentContainerRef.current.scrollTo({
           top: 0,
           behavior: 'smooth'
         });
       }
-    }, 50);
+    }, 0);
 
     console.log(`[언어 변경 완료] ${targetLanguage}`);
   };
@@ -422,7 +413,7 @@ export default function EbookReader({ bookId }: EbookReaderProps) {
           <div className="text-xs text-gray-500">{currentPage + 1} / {currentContent.length} · {currentLanguage}</div>
         </div>
 
-        {/* 언어 변경 버튼들 - 완전히 새로운 구조 */}
+        {/* 언어 변경 버튼들 - 개선된 버전 */}
         <div className="flex items-center gap-1 flex-shrink-0">
           {availableLanguages.map((lang) => {
             const languageMap: Record<string, { flag: string; code: string }> = {
@@ -433,38 +424,38 @@ export default function EbookReader({ bookId }: EbookReaderProps) {
             };
 
             const langInfo = languageMap[lang];
-            if (!langInfo) return null;
+            if (!langInfo) {
+              console.warn(`지원하지 않는 언어: ${lang}`);
+              return null;
+            }
 
             const isSelected = currentLanguage === lang;
 
             return (
-              <div
-                key={`lang-${lang}`}
-                onClick={() => {
+              <button
+                key={`lang-btn-${lang}`}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   console.log(`언어 버튼 클릭: ${lang}`);
                   handleLanguageChange(lang);
                 }}
-                className={`min-w-[44px] min-h-[36px] rounded-lg cursor-pointer select-none transition-all duration-200 flex flex-col items-center justify-center px-2 py-1 active:scale-95
+                className={`min-w-[44px] min-h-[36px] rounded-lg cursor-pointer select-none transition-all duration-200 flex flex-col items-center justify-center px-2 py-1 active:scale-95 border
                   ${isSelected
-                    ? 'bg-blue-600 text-white shadow-lg scale-105 ring-2 ring-blue-300'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:scale-105'
+                    ? 'bg-blue-600 text-white shadow-lg scale-105 ring-2 ring-blue-300 border-blue-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:scale-105 border-gray-200 hover:border-gray-300'
                   }
-                  !rounded-button
+                  !rounded-button focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1
                 `}
                 style={{
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
                   userSelect: 'none'
                 }}
-                role="button"
-                tabIndex={0}
+                disabled={isSelected}
                 aria-label={`${langInfo.code} 언어로 변경`}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleLanguageChange(lang);
-                  }
-                }}
+                aria-pressed={isSelected}
               >
                 <span className="text-base leading-none mb-0.5" style={{ fontSize: '14px' }}>
                   {langInfo.flag}
@@ -472,7 +463,7 @@ export default function EbookReader({ bookId }: EbookReaderProps) {
                 <span className="text-xs font-semibold leading-none" style={{ fontSize: '8px' }}>
                   {langInfo.code}
                 </span>
-              </div>
+              </button>
             );
           })}
         </div>

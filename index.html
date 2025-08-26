@@ -5,399 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이도 - 한국 고전문학의 디지털 공간</title>
     <meta name="description" content="한국 고전문학을 4개 언어로 만나는 디지털 도서관">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #fafafa;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        .header {
-            background: #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2563eb;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #666;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #2563eb;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 120px 0 80px;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: #fff;
-            color: #667eea;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        /* Languages */
-        .languages {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .language-tag {
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            backdrop-filter: blur(10px);
-        }
-
-        /* Features */
-        .features {
-            padding: 80px 0;
-            background: #fff;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 3rem;
-            color: #333;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            text-align: center;
-            padding: 2rem;
-            border-radius: 10px;
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-
-        .feature-card p {
-            color: #666;
-            line-height: 1.5;
-        }
-
-        /* Books Section */
-        .books {
-            padding: 80px 0;
-            background: #f8fafc;
-        }
-
-        .books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .book-card {
-            background: #fff;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-        }
-
-        .book-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-        }
-
-        .book-emoji {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .book-card h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        .book-author {
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .book-description {
-            color: #777;
-            margin-bottom: 2rem;
-            line-height: 1.5;
-        }
-
-        .book-languages {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .lang-button {
-            background: #f1f5f9;
-            color: #475569;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .lang-button:hover {
-            background: #2563eb;
-            color: white;
-        }
-
-        /* Stats */
-        .stats {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: white;
-            padding: 80px 0;
-            text-align: center;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-item h4 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-item p {
-            color: #cbd5e1;
-            font-size: 1.1rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: #fff;
-            padding: 60px 0 30px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-
-        .footer-section p, .footer-section a {
-            color: #666;
-            text-decoration: none;
-            line-height: 1.8;
-        }
-
-        .footer-section a:hover {
-            color: #2563eb;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid #e2e8f0;
-            color: #666;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1.1rem;
-            }
-
-            .languages {
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .books-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Smooth scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Utility classes */
-        .text-center {
-            text-align: center;
-        }
-
-        .mb-2 {
-            margin-bottom: 1rem;
-        }
-
-        /* 모바일 메뉴 버튼 */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #333;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .nav-links {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: #fff;
-                flex-direction: column;
-                padding: 1rem;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                display: none;
-            }
-            
-            .nav-links.active {
-                display: flex;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="container">
             <nav class="nav">
-                <a href="#" class="logo">이도</a>
+                <a href="index-simple.html" class="logo">이도</a>
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="#books" onclick="closeMobileMenu()">도서</a></li>
-                    <li><a href="#about" onclick="closeMobileMenu()">소개</a></li>
+                    <li><a href="books.html" onclick="closeMobileMenu()">도서</a></li>
+                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
                     <li><a href="#contact" onclick="closeMobileMenu()">문의</a></li>
                 </ul>
             </nav>
@@ -409,7 +28,7 @@
         <div class="container">
             <h1>한국문학의 디지털 여행</h1>
             <p>천년의 문학 전통을 현대적 감각으로 재해석한 디지털 도서관입니다</p>
-            <a href="#books" class="cta-button">도서 둘러보기</a>
+            <a href="books.html" class="cta-button">도서 둘러보기</a>
             
             <div class="languages">
                 <span class="language-tag">🇰🇷 한국어</span>
@@ -460,7 +79,7 @@
                     <p class="book-author">작자 미상</p>
                     <p class="book-description">사랑과 의리가 만나는 조선시대 최고의 로맨스</p>
                     <div class="book-languages">
-                        <button class="lang-button" onclick="showComingSoon()">🇰🇷 한국어</button>
+                        <button class="lang-button" onclick="readBook('chunhyang')">📖 읽기</button>
                         <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
                         <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
                         <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
@@ -473,7 +92,7 @@
                     <p class="book-author">작자 미상</p>
                     <p class="book-description">효심으로 가득한 딸의 감동적인 희생과 사랑</p>
                     <div class="book-languages">
-                        <button class="lang-button" onclick="showComingSoon()">🇰🇷 한국어</button>
+                        <button class="lang-button" onclick="readBook('simcheong')">📖 읽기</button>
                         <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
                         <button class="lang-button" onclick="showComingSoon()">🇯🇵 日본語</button>
                         <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
@@ -486,7 +105,7 @@
                     <p class="book-author">작자 미상</p>
                     <p class="book-description">착함과 욕심의 대비로 보는 인생의 교훈</p>
                     <div class="book-languages">
-                        <button class="lang-button" onclick="showComingSoon()">🇰🇷 한국어</button>
+                        <button class="lang-button" onclick="readBook('heungbu')">📖 읽기</button>
                         <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
                         <button class="lang-button" onclick="showComingSoon()">🇯🇵 日본語</button>
                         <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
@@ -522,7 +141,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer" id="about">
+    <footer class="footer" id="contact">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
@@ -531,7 +150,7 @@
                 </div>
                 <div class="footer-section">
                     <h4>서비스</h4>
-                    <p><a href="#books">전자책 서비스</a></p>
+                    <p><a href="books.html">전자책 서비스</a></p>
                     <p><a href="#" onclick="showComingSoon()">작가 소개</a></p>
                     <p><a href="#" onclick="showComingSoon()">문학 해설</a></p>
                 </div>
@@ -542,11 +161,10 @@
                     <p><a href="#contact" onclick="showContact()">문의하기</a></p>
                 </div>
                 <div class="footer-section">
-                    <h4>언어</h4>
-                    <p>🇰🇷 한국어</p>
-                    <p>🇺🇸 English</p>
-                    <p>🇯🇵 日본語</p>
-                    <p>🇪🇸 Español</p>
+                    <h4>연락처</h4>
+                    <p>이메일: contact@idopress.com</p>
+                    <p>전화: 02-1234-5678</p>
+                    <p>주소: 서울시 중구 세종대로 110</p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -555,94 +173,32 @@
         </div>
     </footer>
 
+    <script src="scripts.js"></script>
     <script>
-        // 모바일 메뉴 토글
-        function toggleMobileMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
-        }
-
-        // 모바일 메뉴 닫기
-        function closeMobileMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.remove('active');
-        }
-
-        // 서비스 준비 중 알림
-        function showComingSoon() {
-            alert('🚀 곧 서비스 예정입니다!\n\n더 나은 서비스로 찾아뵙겠습니다.');
-        }
-
-        // 연락처 알림
-        function showContact() {
-            alert('📧 문의사항이 있으시면 언제든 연락주세요!\n\n이메일: contact@idopress.com\n전화: 02-1234-5678');
-        }
-
-        // 부드러운 스크롤 효과
-        document.addEventListener('DOMContentLoaded', function() {
-            // 앵커 링크 부드러운 스크롤
-            const links = document.querySelectorAll('a[href^="#"]');
-            links.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-
-            // 헤더 스크롤 효과
-            window.addEventListener('scroll', function() {
-                const header = document.querySelector('.header');
-                if (window.scrollY > 100) {
-                    header.style.background = 'rgba(255, 255, 255, 0.95)';
-                    header.style.backdropFilter = 'blur(10px)';
-                } else {
-                    header.style.background = '#fff';
-                    header.style.backdropFilter = 'none';
-                }
-            });
-
-            // 스크롤 애니메이션
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
+        function readBook(bookId) {
+            // 이북 리더로 이동
+            const bookUrls = {
+                'chunhyang': 'read-chunhyang.html',
+                'simcheong': 'read-simcheong.html', 
+                'heungbu': 'read-heungbu.html'
             };
-
-            const observer = new IntersectionObserver(function(entries) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-
-            // 애니메이션 대상 요소들
-            const animateElements = document.querySelectorAll('.feature-card, .book-card, .stat-item');
-            animateElements.forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(el);
-            });
-        });
-
-        // 외부 클릭 시 모바일 메뉴 닫기
-        document.addEventListener('click', function(e) {
-            const navLinks = document.getElementById('navLinks');
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            const nav = document.querySelector('.nav');
             
-            if (!nav.contains(e.target)) {
-                navLinks.classList.remove('active');
+            if (bookUrls[bookId]) {
+                // 모든 책이 준비됨 (샘플 컨텐츠)
+                window.location.href = bookUrls[bookId];
+            } else {
+                alert(`📚 "${getBookName(bookId)}" 서비스는 곧 제공될 예정입니다!`);
             }
-        });
+        }
+        
+        function getBookName(bookId) {
+            const names = {
+                'chunhyang': '춘향전',
+                'simcheong': '심청전',
+                'heungbu': '흥부전'
+            };
+            return names[bookId] || bookId;
+        }
     </script>
 </body>
 </html>

@@ -27,6 +27,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .header-container {
@@ -43,6 +44,9 @@
             font-weight: bold;
             color: #2c3e50;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .header-nav {
@@ -60,7 +64,7 @@
             transition: all 0.2s;
         }
 
-        .header-nav a:hover {
+        .header-nav a:hover, .header-nav a.active {
             color: #007bff;
             background-color: #f8f9ff;
         }
@@ -94,6 +98,7 @@
             border: none;
             color: #6c757d;
             cursor: pointer;
+            font-size: 16px;
         }
 
         /* Main Layout */
@@ -108,19 +113,22 @@
 
         /* Sidebar */
         .sidebar {
-            width: 240px;
+            width: 260px;
             background: #fff;
             border-radius: 8px;
-            padding: 20px;
+            padding: 25px;
             height: fit-content;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
         .sidebar h3 {
             font-size: 16px;
-            margin-bottom: 15px;
-            color: #333;
+            margin-bottom: 18px;
+            color: #2c3e50;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .sidebar-menu {
@@ -128,19 +136,20 @@
         }
 
         .sidebar-menu li {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .sidebar-menu a {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
+            gap: 12px;
+            padding: 12px 15px;
             color: #6c757d;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
             transition: all 0.2s;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .sidebar-menu a:hover {
@@ -151,11 +160,13 @@
         .sidebar-menu a.active {
             background-color: #e7f3ff;
             color: #007bff;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .category-section {
-            margin-top: 30px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #f1f3f4;
         }
 
         /* Content Area */
@@ -163,8 +174,8 @@
             flex: 1;
             background: #fff;
             border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
         .content-header {
@@ -172,13 +183,13 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
         }
 
         .content-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             color: #2c3e50;
         }
 
@@ -191,8 +202,9 @@
         .view-toggle {
             display: flex;
             background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 3px;
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid #e9ecef;
         }
 
         .view-btn {
@@ -200,81 +212,97 @@
             border: none;
             background: none;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
             color: #6c757d;
             font-size: 14px;
+            transition: all 0.2s;
         }
 
         .view-btn.active {
             background-color: #fff;
             color: #007bff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,123,255,0.15);
+            font-weight: 600;
         }
 
         .sort-select {
-            padding: 8px 12px;
+            padding: 10px 15px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
             background-color: #fff;
+            color: #495057;
+            min-width: 140px;
         }
 
         /* Book Table */
         .book-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 15px;
+            background: #fff;
         }
 
         .book-table th {
-            background-color: #f8f9fa;
-            padding: 15px 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px 15px;
             text-align: left;
             font-weight: 600;
             font-size: 14px;
             color: #495057;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid #dee2e6;
+            position: sticky;
+            top: 64px;
         }
 
         .book-table td {
-            padding: 15px 12px;
-            border-bottom: 1px solid #f1f3f4;
+            padding: 18px 15px;
+            border-bottom: 1px solid #f8f9fa;
             font-size: 14px;
             vertical-align: middle;
         }
 
+        .book-table tbody tr {
+            transition: all 0.2s;
+        }
+
         .book-table tbody tr:hover {
             background-color: #f8f9ff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
         }
 
         .book-checkbox {
             width: 18px;
             height: 18px;
             cursor: pointer;
+            accent-color: #007bff;
         }
 
         .book-cover {
-            width: 40px;
-            height: 56px;
+            width: 45px;
+            height: 60px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
         }
 
         .book-info {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .book-title {
             font-weight: 600;
             color: #2c3e50;
             cursor: pointer;
+            font-size: 15px;
+            line-height: 1.4;
         }
 
         .book-title:hover {
@@ -286,77 +314,98 @@
             font-size: 13px;
         }
 
-        .book-category {
-            background-color: #f8f9fa;
-            padding: 4px 8px;
-            border-radius: 12px;
+        .book-description {
+            color: #8e9aaf;
             font-size: 12px;
-            color: #6c757d;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .book-category {
+            background-color: #f1f5f9;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #475569;
             display: inline-block;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
         .progress-bar {
-            width: 80px;
-            height: 6px;
+            width: 90px;
+            height: 8px;
             background-color: #e9ecef;
-            border-radius: 3px;
+            border-radius: 4px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #28a745, #20c997);
-            transition: width 0.3s ease;
+            transition: width 0.4s ease;
+            border-radius: 4px;
         }
 
         .progress-text {
             font-size: 12px;
             color: #6c757d;
-            margin-top: 4px;
+            font-weight: 500;
         }
 
         .action-btn {
-            padding: 6px 12px;
+            padding: 8px 16px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             background: #fff;
             color: #6c757d;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             text-decoration: none;
             display: inline-block;
             transition: all 0.2s;
+            font-weight: 500;
         }
 
         .action-btn:hover {
             border-color: #007bff;
             color: #007bff;
+            background-color: #f8f9ff;
         }
 
         .action-btn.primary {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
             border-color: #007bff;
         }
 
         .action-btn.primary:hover {
-            background-color: #0056b3;
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,123,255,0.25);
         }
 
         /* Language Tags */
         .language-tags {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .lang-tag {
             background-color: #e7f3ff;
             color: #007bff;
-            padding: 2px 6px;
-            border-radius: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
             font-size: 11px;
-            font-weight: 500;
+            font-weight: 600;
+            border: 1px solid #b3d9ff;
         }
 
         /* Stats Bar */
@@ -365,26 +414,41 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding: 15px 0;
-            border-bottom: 1px solid #f1f3f4;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e7f3ff 100%);
+            border-radius: 8px;
+            border: 1px solid #e3f2fd;
         }
 
         .stats-info {
-            color: #6c757d;
-            font-size: 14px;
+            color: #495057;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .stats-info strong {
+            color: #007bff;
+            font-size: 18px;
         }
 
         .bulk-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .bulk-actions label {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
         }
 
         .bulk-actions select {
-            padding: 6px 10px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 13px;
+            background-color: #fff;
         }
 
         /* Mobile Responsive */
@@ -414,18 +478,23 @@
             }
 
             .book-table {
-                font-size: 13px;
+                font-size: 12px;
             }
 
             .book-table th,
             .book-table td {
-                padding: 10px 8px;
+                padding: 12px 8px;
             }
 
             .content-actions {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 15px;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
             }
         }
 
@@ -434,37 +503,38 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 56px;
-            height: 56px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: #007bff;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+            box-shadow: 0 6px 20px rgba(0,123,255,0.4);
             transition: all 0.3s;
+            z-index: 1000;
         }
 
         .fab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,123,255,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.5);
         }
 
         /* Loading Animation */
         .loading {
             display: none;
             text-align: center;
-            padding: 40px;
+            padding: 50px;
             color: #6c757d;
         }
 
         .spinner {
             display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -473,16 +543,34 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-container">
-            <a href="index.html" class="logo">📚 이도</a>
+            <a href="index.html" class="logo">
+                <span>📚</span>
+                <span>이도</span>
+            </a>
             
             <nav class="header-nav">
-                <a href="#" onclick="filterBooks('all')">전체 도서</a>
+                <a href="#" onclick="filterBooks('all')" class="active">전체 도서</a>
                 <a href="#" onclick="filterBooks('classical')">고전문학</a>
                 <a href="#" onclick="filterBooks('modern')">현대문학</a>
                 <a href="admin-test.html">업로드</a>
@@ -517,6 +605,7 @@
                     <li><a href="#" onclick="filterBooks('novel')">📖 소설</a></li>
                     <li><a href="#" onclick="filterBooks('poetry')">🎭 시가</a></li>
                     <li><a href="#" onclick="filterBooks('history')">📚 역사</a></li>
+                    <li><a href="#" onclick="filterBooks('system')">⚙️ 시스템</a></li>
                 </ul>
             </div>
 
@@ -536,6 +625,7 @@
                     <li><a href="admin-test.html">🧪 테스트 업로드</a></li>
                     <li><a href="admin-simple.html">🚀 간편 업로드</a></li>
                     <li><a href="admin-multilingual.html">⚙️ 고급 관리</a></li>
+                    <li><a href="books-dynamic.html">📚 동적 도서</a></li>
                 </ul>
             </div>
         </aside>
@@ -584,7 +674,7 @@
                             <th>도서 정보</th>
                             <th width="100">카테고리</th>
                             <th width="120">언어</th>
-                            <th width="100">진행률</th>
+                            <th width="120">진행률</th>
                             <th width="100">등록일</th>
                             <th width="120">작업</th>
                         </tr>
@@ -598,6 +688,12 @@
             <div class="loading" id="loadingIndicator">
                 <div class="spinner"></div>
                 <p>도서 목록을 불러오는 중...</p>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <h3>📚 도서가 없습니다</h3>
+                <p>검색 조건을 변경하거나 새로운 도서를 업로드해보세요.</p>
+                <a href="admin-test.html" class="action-btn primary">새 도서 업로드</a>
             </div>
         </main>
     </div>
@@ -623,13 +719,20 @@
             document.getElementById('searchInput').addEventListener('input', function(e) {
                 searchBooks(e.target.value);
             });
+
+            // Enter key for search
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBooks(e.target.value);
+                }
+            });
         }
 
         // Load books from localStorage and default books
         function loadBooks() {
             showLoading();
             
-            // Default books (updated to match current files)
+            // Default books (matching GitHub file structure)
             const defaultBooks = [
                 {
                     id: 'chunhyang',
@@ -642,6 +745,18 @@
                     emoji: '🌸',
                     description: '사랑과 의리가 만나는 조선시대 최고의 로맨스',
                     url: 'read-chunhyang.html'
+                },
+                {
+                    id: 'chunhyang-pro',
+                    title: '춘향전 (고급판)',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🌸',
+                    description: '춘향전의 향상된 버전',
+                    url: 'read-chunhyang-pro.html'
                 },
                 {
                     id: 'simcheong',
@@ -690,6 +805,30 @@
                     emoji: '📖',
                     description: '자연스러운 페이지 넘김 애니메이션을 지원하는 현대적 전자책 리더',
                     url: 'reader-natural.html'
+                },
+                {
+                    id: 'reader-mobile',
+                    title: '모바일 리더기',
+                    author: '이도 시스템',
+                    category: 'system',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-25',
+                    emoji: '📱',
+                    description: '모바일 최적화된 스와이프 기반 전자책 리더',
+                    url: 'reader-mobile.html'
+                },
+                {
+                    id: 'reader-universal',
+                    title: '범용 리더기',
+                    author: '이도 시스템',
+                    category: 'system',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-24',
+                    emoji: '🌐',
+                    description: '모든 기기에서 사용 가능한 범용 전자책 리더',
+                    url: 'reader-universal.html'
                 }
             ];
 
@@ -708,7 +847,19 @@
         // Render books in table format
         function renderBooks() {
             const tbody = document.getElementById('bookTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const tableView = document.getElementById('tableView');
+            
             tbody.innerHTML = '';
+
+            if (filteredBooks.length === 0) {
+                tableView.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            tableView.style.display = 'block';
+            emptyState.style.display = 'none';
 
             filteredBooks.forEach(book => {
                 const row = document.createElement('tr');
@@ -723,6 +874,7 @@
                         <div class="book-info">
                             <div class="book-title" onclick="readBook('${book.id}')">${book.title}</div>
                             <div class="book-author">${book.author}</div>
+                            <div class="book-description">${book.description || ''}</div>
                         </div>
                     </td>
                     <td>
@@ -734,10 +886,12 @@
                         </div>
                     </td>
                     <td>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${book.progress || 0}%"></div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${book.progress || 0}%"></div>
+                            </div>
+                            <div class="progress-text">${book.progress || 0}%</div>
                         </div>
-                        <div class="progress-text">${book.progress || 0}%</div>
                     </td>
                     <td>${formatDate(book.dateAdded)}</td>
                     <td>
@@ -755,7 +909,8 @@
                 'novel': '소설',
                 'poetry': '시가',
                 'history': '역사',
-                'system': '시스템'
+                'system': '시스템',
+                'modern': '현대문학'
             };
             return names[category] || category;
         }
@@ -791,11 +946,10 @@
                 // For uploaded books, use reader-natural.html
                 window.location.href = `reader-natural.html?book=${bookId}&lang=korean`;
             } else {
-                // For default books, use their specific URLs or reader-natural
-                if (book.url && book.id !== 'reader-natural') {
+                // For default books, use their specific URLs or reader-natural as fallback
+                if (book.url) {
                     window.location.href = book.url;
                 } else {
-                    // Use natural reader for system books or as fallback
                     window.location.href = 'reader-natural.html';
                 }
             }
@@ -803,9 +957,9 @@
 
         // Search functionality
         function searchBooks(query = '') {
-            const searchTerm = query || document.getElementById('searchInput').value.toLowerCase();
+            const searchTerm = query || document.getElementById('searchInput').value.toLowerCase().trim();
             
-            if (!searchTerm.trim()) {
+            if (!searchTerm) {
                 filteredBooks = [...allBooks];
             } else {
                 filteredBooks = allBooks.filter(book => 
@@ -906,20 +1060,25 @@
 
         // Show/hide sections
         function showSection(section) {
+            // Update active menu
             document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
             event.target.classList.add('active');
             
             switch(section) {
                 case 'recent':
-                    filteredBooks = allBooks.slice(0, 5);
+                    // Show recently accessed books (last 5 for demo)
+                    filteredBooks = allBooks.slice(-5).reverse();
                     break;
                 case 'favorites':
+                    // Show favorited books
                     filteredBooks = allBooks.filter(book => book.favorite);
                     break;
                 case 'reading':
+                    // Show books currently being read
                     filteredBooks = allBooks.filter(book => book.progress > 0 && book.progress < 100);
                     break;
                 case 'completed':
+                    // Show completed books
                     filteredBooks = allBooks.filter(book => book.progress >= 100);
                     break;
                 default:
@@ -931,27 +1090,37 @@
         }
 
         function updateActiveMenu() {
-            // Update active menu items
+            // Update active menu items based on current filter
         }
 
         // Loading states
         function showLoading() {
             document.getElementById('loadingIndicator').style.display = 'block';
             document.getElementById('tableView').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
         }
 
         function hideLoading() {
             document.getElementById('loadingIndicator').style.display = 'none';
-            document.getElementById('tableView').style.display = 'block';
         }
 
-        // Refresh book list
+        // Refresh book list (for when new books are uploaded)
         function refreshBookList() {
             loadBooks();
         }
 
         // Auto-refresh every 30 seconds to catch new uploads
         setInterval(refreshBookList, 30000);
+
+        // Add some visual feedback for interactions
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('action-btn')) {
+                e.target.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    e.target.style.transform = '';
+                }, 150);
+            }
+        });
     </script>
 </body>
 </html>

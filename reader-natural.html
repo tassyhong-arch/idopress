@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>자연스러운 리더기 - 이도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nanum Myeongjo', 'Times New Roman', serif;
+            background: #f5f5f0;
+            color: #1a1a1a;
+            overflow: hidden;
+            height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e2e8f0;
+        }
+
+        /* 진행률 바 */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(0,0,0,0.1);
+            z-index: 2000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transition: width 0.5s ease;
+        }
+
+        /* 상단 헤더 */
+        .reader-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
+            backdrop-filter: blur(20px);
+            z-index: 1500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transform: translateY(-100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reader-header.visible {
+            transform: translateY(0);
+        }
+
+        .dark-mode .reader-header {
+            background: linear-gradient(135deg, rgba(26,26,26,0.95) 0%, rgba(30,30,30,0.95) 100%);
+            border-bottom-color: rgba(255,255,255,0.05);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #2563eb;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(37,99,235,0.1);
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dark-mode .book-title {
+            color: #e2e8f0;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .header-btn {
+            background: rgba(37,99,235,0.1);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #2563eb;
+            padding: 0.6rem;
+            border-radius: 10px;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-btn:hover {
+            background: rgba(37,99,235,0.2);
+            transform: translateY(-1px);
+        }
+
+        /* 책 페이지 컨테이너 */
+        .book-container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+            background: radial-gradient(ellipse at center, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .dark-mode .book-container {
+            background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        .pages-wrapper {
+            position: relative;
+            width: 90vw;
+            max-width: 600px;
+            height: 80vh;
+            max-height: 700px;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(0,0,0,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            padding: 3rem 2.5rem;
+            overflow: hidden;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            backface-visibility: hidden;
+        }
+
+        .dark-mode .page {
+            background: #2d3748;
+            color: #e2e8f0;
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(255,255,255,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .page-content {
+            height: 100%;
+            overflow-y: auto;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: justify;
+            scroll-behavior: smooth;
+            padding-right: 1rem;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .page-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .page-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 1rem;
+            right: 2rem;
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .dark-mode .page-number {
+            color: #94a3b8;
+        }
+
+        /* 페이지 상태별 스타일 */
+        .page.current {
+            z-index: 100;
+            transform: translateZ(0) rotateY(0deg);
+        }
+
+        .page.next {
+            z-index: 99;
+            transform: translateX(100%) rotateY(0deg);
+        }
+
+        .page.prev {
+            z-index: 98;
+            transform: translateX(-100%) rotateY(0deg);
+        }
+
+        .page.turning-next {
+            z-index: 101;
+            transform: translateZ(20px) rotateY(-90deg);
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        .page.turning-prev {
+            z-index: 101;
+            transform: translateZ(20px) rotateY(90deg);
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        .page.turned-next {
+            z-index: 97;
+            transform: translateZ(-10px) rotateY(-180deg);
+        }
+
+        .page.turned-prev {
+            z-index: 97;
+            transform: translateZ(-10px) rotateY(180deg);
+        }
+
+        /* 터치 영역 */
+        .touch-zones {
+            position: absolute;
+            top: 60px;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .touch-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: background 0.2s;
+        }
+
+        .touch-zone.left {
+            left: 0;
+            width: 35%;
+        }
+
+        .touch-zone.right {
+            right: 0;
+            width: 35%;
+        }
+
+        .touch-zone.center {
+            left: 35%;
+            right: 35%;
+        }
+
+        .touch-zone:active {
+            background: rgba(37,99,235,0.05);
+        }
+
+        /* 하단 네비게이션 */
+        .reader-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
+            backdrop-filter: blur(20px);
+            z-index: 1500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            transform: translateY(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reader-nav.visible {
+            transform: translateY(0);
+        }
+
+        .dark-mode .reader-nav {
+            background: linear-gradient(135deg, rgba(26,26,26,0.95) 0%, rgba(30,30,30,0.95) 100%);
+            border-top-color: rgba(255,255,255,0.05);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+            min-width: 80px;
+        }
+
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+            color: #64748b;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+        }
+
+        .nav-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .page-indicator {
+            text-align: center;
+            color: #64748b;
+        }
+
+        .chapter-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .page-count {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* 패널들 */
+        .panel {
+            position: fixed;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark-mode .panel {
+            background: rgba(45,55,72,0.98);
+            color: #e2e8f0;
+        }
+
+        .language-panel {
+            bottom: -300px;
+            left: 1rem;
+            right: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .language-panel.visible {
+            bottom: 2rem;
+        }
+
+        .settings-panel {
+            right: -350px;
+            top: 2rem;
+            bottom: 2rem;
+            width: 320px;
+            overflow-y: auto;
+        }
+
+        .settings-panel.visible {
+            right: 2rem;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .dark-mode .panel-title {
+            color: #e2e8f0;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .lang-btn {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid transparent;
+            padding: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37,99,235,0.4);
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            transform: translateY(-1px);
+        }
+
+        .setting-group {
+            margin-bottom: 2rem;
+        }
+
+        .setting-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .dark-mode .setting-label {
+            color: #e2e8f0;
+        }
+
+        .setting-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            margin: 0.5rem 0;
+        }
+
+        .setting-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.4);
+        }
+
+        .setting-value {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        /* 메시지 */
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 2rem;
+            max-width: 350px;
+            z-index: 3000;
+        }
+
+        .loading {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            color: #2563eb;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .error {
+            background: rgba(254,242,242,0.95);
+            border-radius: 20px;
+            color: #dc2626;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(220,38,38,0.1);
+        }
+
+        /* 페이지 전환 효과 */
+        .page-transition {
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .pages-wrapper {
+                width: 95vw;
+                height: 85vh;
+            }
+            
+            .page {
+                padding: 2rem 1.5rem;
+            }
+            
+            .page-content {
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+            
+            .settings-panel {
+                width: 280px;
+                right: -300px;
+            }
+            
+            .settings-panel.visible {
+                right: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page {
+                padding: 1.5rem 1rem;
+            }
+            
+            .page-content {
+                font-size: 0.95rem;
+            }
+            
+            .nav-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+                min-width: 60px;
+            }
+        }
+
+        /* 애니메이션 키프레임 */
+        @keyframes pageFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(-90deg) translateZ(20px); }
+            100% { transform: rotateY(-180deg) translateZ(-10px); }
+        }
+
+        @keyframes pageFlipBack {
+            0% { transform: rotateY(-180deg) translateZ(-10px); }
+            50% { transform: rotateY(-90deg) translateZ(20px); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        .page.flip-forward {
+            animation: pageFlip 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .page.flip-backward {
+            animation: pageFlipBack 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- 진행률 바 -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- 상단 헤더 -->
+    <header class="reader-header" id="readerHeader">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1 class="book-title" id="bookTitle">도서 로딩 중...</h1>
+        </div>
+        <div class="header-controls">
+            <button class="header-btn" onclick="toggleLanguagePanel()">🌍</button>
+            <button class="header-btn" onclick="toggleSettings()">⚙️</button>
+            <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
+        </div>
+    </header>
+
+    <!-- 메인 책 컨테이너 -->
+    <div class="book-container">
+        <div class="pages-wrapper" id="pagesWrapper">
+            <!-- 페이지들이 동적으로 생성됨 -->
+        </div>
+
+        <!-- 터치 영역 -->
+        <div class="touch-zones">
+            <div class="touch-zone left" onclick="previousPage()"></div>
+            <div class="touch-zone center" onclick="toggleUI()"></div>
+            <div class="touch-zone right" onclick="nextPage()"></div>
+        </div>
+
+        <!-- 메시지 영역 -->
+        <div class="message loading" id="loadingMessage">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📖</div>
+            <div>도서를 불러오는 중...</div>
+            <small style="opacity: 0.7;">잠시만 기다려주세요</small>
+        </div>
+
+        <div class="message error" id="errorMessage" style="display: none;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
+            <div>도서를 찾을 수 없습니다</div>
+            <small style="opacity: 0.7;">다른 도서를 선택해주세요</small>
+        </div>
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="reader-nav" id="readerNav">
+        <button class="nav-btn" id="prevBtn" onclick="previousPage()">← 이전</button>
+        <div class="page-indicator">
+            <div class="chapter-name" id="chapterName">Chapter 1</div>
+            <div class="page-count" id="pageCount">1 / 1</div>
+        </div>
+        <button class="nav-btn" id="nextBtn" onclick="nextPage()">다음 →</button>
+    </nav>
+
+    <!-- 언어 선택 패널 -->
+    <div class="panel language-panel" id="languagePanel">
+        <h3 class="panel-title">언어 선택</h3>
+        <div class="language-grid" id="languageGrid">
+            <!-- 동적으로 생성 -->
+        </div>
+    </div>
+
+    <!-- 설정 패널 -->
+    <div class="panel settings-panel" id="settingsPanel">
+        <h3 class="panel-title">읽기 설정</h3>
+        
+        <div class="setting-group">
+            <label class="setting-label">글자 크기</label>
+            <input type="range" class="setting-slider" id="fontSizeSlider" 
+                   min="14" max="24" value="18" oninput="changeFontSize(this.value)">
+            <div class="setting-value" id="fontSizeValue">18px</div>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">줄 간격</label>
+            <input type="range" class="setting-slider" id="lineHeightSlider" 
+                   min="1.4" max="2.2" step="0.1" value="1.8" oninput="changeLineHeight(this.value)">
+            <div class="setting-value" id="lineHeightValue">1.8</div>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">페이지당 글자 수</label>
+            <input type="range" class="setting-slider" id="charsPerPageSlider" 
+                   min="800" max="2500" step="100" value="1500" oninput="changeCharsPerPage(this.value)">
+            <div class="setting-value" id="charsPerPageValue">1500자</div>
+        </div>
+        
+        <button class="nav-btn" onclick="resetSettings()" style="width: 100%; margin-top: 2rem;">
+            기본값 복원
+        </button>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentBook = null;
+        let currentLanguage = 'korean';
+        let currentPage = 0;
+        let pages = [];
+        let isUIVisible = false;
+        let isTransitioning = false;
+        let charsPerPage = 1500;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        // 언어 매핑
+        const languages = {
+            korean: '🇰🇷 한국어',
+            english: '🇺🇸 English', 
+            spanish: '🇪🇸 Español',
+            japanese: '🇯🇵 日本語'
+        };
+
+        // URL 파라미터 파싱
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                bookId: urlParams.get('book'),
+                language: urlParams.get('lang') || 'korean'
+            };
+        }
+
+        // 책 로드
+        async function loadBook() {
+            const params = getUrlParams();
+            if (!params.bookId) {
+                showError('도서 ID가 지정되지 않았습니다.');
+                return;
+            }
+
+            const testBooks = JSON.parse(localStorage.getItem('testBooks') || '[]');
+            currentBook = testBooks.find(book => book.id === params.bookId);
+            
+            if (!currentBook) {
+                showError(`도서 "${params.bookId}"를 찾을 수 없습니다.`);
+                return;
+            }
+
+            currentLanguage = params.language;
+            await initializeReader();
+        }
+
+        // 리더 초기화
+        async function initializeReader() {
+            hideMessage();
+            
+            // 책 제목 설정
+            const title = currentBook.title[currentLanguage] || currentBook.title.korean || '제목 없음';
+            document.getElementById('bookTitle').textContent = title;
+            
+            // 언어 선택기 생성
+            createLanguageSelector();
+            
+            // 페이지 생성
+            await createPages();
+            
+            // 첫 페이지 표시
+            showPage(0);
+            
+            // 설정 적용
+            applySavedSettings();
+            
+            // 터치 이벤트 초기화
+            initTouchEvents();
+        }
+
+        // 언어 선택기 생성
+        function createLanguageSelector() {
+            const container = document.getElementById('languageGrid');
+            container.innerHTML = '';
+
+            Object.keys(languages).forEach(lang => {
+                if (currentBook.title[lang] && currentBook.content[lang]) {
+                    const btn = document.createElement('button');
+                    btn.className = 'lang-btn';
+                    btn.textContent = languages[lang];
+                    if (lang === currentLanguage) btn.classList.add('active');
+                    btn.onclick = () => changeLanguage(lang);
+                    container.appendChild(btn);
+                }
+            });
+        }
+
+        // 언어 변경
+        async function changeLanguage(language) {
+            if (isTransitioning) return;
+            
+            currentLanguage = language;
+            currentPage = 0;
+            
+            // 언어 버튼 상태 업데이트
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 제목 업데이트
+            const title = currentBook.title[currentLanguage] || currentBook.title.korean;
+            document.getElementById('bookTitle').textContent = title;
+            
+            // 페이지 재생성
+            await createPages();
+            showPage(0);
+            
+            // 패널 닫기
+            toggleLanguagePanel();
+        }
+
+        // 페이지 생성
+        async function createPages() {
+            const content = currentBook.content[currentLanguage] || currentBook.content.korean || '';
+            const container = document.getElementById('pagesWrapper');
+            
+            // 기존 페이지 제거
+            container.innerHTML = '';
+            pages = [];
+            
+            if (!content.trim()) {
+                pages = ['내용이 없습니다.'];
+            } else {
+                // 텍스트를 페이지로 분할
+                pages = splitTextIntoPages(content, charsPerPage);
+            }
+            
+            // 페이지 DOM 생성 (3개만: 이전, 현재, 다음)
+            for (let i = 0; i < 3; i++) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+                pageDiv.innerHTML = `
+                    <div class="page-content"></div>
+                    <div class="page-number"></div>
+                `;
+                container.appendChild(pageDiv);
+            }
+            
+            updatePageContents();
+            updateProgress();
+        }
+
+        // 페이지 내용 업데이트
+        function updatePageContents() {
+            const pageElements = document.querySelectorAll('.page');
+            
+            // 이전 페이지 (index 0)
+            if (currentPage > 0) {
+                const prevContent = pages[currentPage - 1] || '';
+                pageElements[0].querySelector('.page-content').textContent = prevContent;
+                pageElements[0].querySelector('.page-number').textContent = `${currentPage} / ${pages.length}`;
+                pageElements[0].className = 'page prev';
+            } else {
+                pageElements[0].style.display = 'none';
+            }
+            
+            // 현재 페이지 (index 1)
+            const currentContent = pages[currentPage] || '';
+            pageElements[1].querySelector('.page-content').textContent = currentContent;
+            pageElements[1].querySelector('.page-number').textContent = `${currentPage + 1} / ${pages.length}`;
+            pageElements[1].className = 'page current';
+            pageElements[1].style.display = 'block';
+            
+            // 다음 페이지 (index 2)
+            if (currentPage < pages.length - 1) {
+                const nextContent = pages[currentPage + 1] || '';
+                pageElements[2].querySelector('.page-content').textContent = nextContent;
+                pageElements[2].querySelector('.page-number').textContent = `${currentPage + 2} / ${pages.length}`;
+                pageElements[2].className = 'page next';
+                pageElements[2].style.display = 'block';
+            } else {
+                pageElements[2].style.display = 'none';
+            }
+        }
+
+        // 텍스트를 페이지로 분할
+        function splitTextIntoPages(text, maxChars) {
+            const pages = [];
+            const paragraphs = text.split(/\n\s*\n/);
+            let currentPage = '';
+            
+            for (const paragraph of paragraphs) {
+                const trimmedParagraph = paragraph.trim();
+                if (!trimmedParagraph) continue;
+                
+                if (currentPage.length + trimmedParagraph.length + 2 > maxChars && currentPage.length > 0) {
+                    pages.push(currentPage.trim());
+                    currentPage = trimmedParagraph + '\n\n';
+                } else {
+                    currentPage += trimmedParagraph + '\n\n';
+                }
+            }
+            
+            if (currentPage.trim()) {
+                pages.push(currentPage.trim());
+            }
+            
+            return pages.length > 0 ? pages : [text];
+        }
+
+        // 페이지 표시 (자연스러운 애니메이션과 함께)
+        function showPage(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= pages.length || isTransitioning) return;
+            
+            currentPage = pageIndex;
+            updatePageContents();
+            
+            // 버튼 상태 업데이트
+            document.getElementById('prevBtn').disabled = pageIndex === 0;
+            document.getElementById('nextBtn').disabled = pageIndex === pages.length - 1;
+            
+            // 페이지 정보 업데이트
+            document.getElementById('pageCount').textContent = `${pageIndex + 1} / ${pages.length}`;
+            document.getElementById('chapterName').textContent = currentBook.title[currentLanguage] || currentBook.title.korean;
+            
+            updateProgress();
+        }
+
+        // 이전 페이지 (자연스러운 애니메이션)
+        function previousPage() {
+            if (currentPage <= 0 || isTransitioning) return;
+            
+            isTransitioning = true;
+            const pageElements = document.querySelectorAll('.page');
+            const currentPageEl = pageElements[1];
+            
+            // 페이지 뒤집기 애니메이션
+            currentPageEl.classList.add('flip-backward');
+            
+            setTimeout(() => {
+                showPage(currentPage - 1);
+                currentPageEl.classList.remove('flip-backward');
+                isTransitioning = false;
+            }, 300);
+        }
+
+        // 다음 페이지 (자연스러운 애니메이션)
+        function nextPage() {
+            if (currentPage >= pages.length - 1 || isTransitioning) return;
+            
+            isTransitioning = true;
+            const pageElements = document.querySelectorAll('.page');
+            const currentPageEl = pageElements[1];
+            
+            // 페이지 뒤집기 애니메이션
+            currentPageEl.classList.add('flip-forward');
+            
+            setTimeout(() => {
+                showPage(currentPage + 1);
+                currentPageEl.classList.remove('flip-forward');
+                isTransitioning = false;
+            }, 300);
+        }
+
+        // 터치 이벤트 처리
+        function initTouchEvents() {
+            const container = document.getElementById('pagesWrapper');
+            let startTime = 0;
+            
+            container.addEventListener('touchstart', (e) => {
+                if (isTransitioning) return;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                startTime = Date.now();
+            }, { passive: true });
+            
+            container.addEventListener('touchend', (e) => {
+                if (isTransitioning) return;
+                
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchStartX - touchEndX;
+                const deltaY = touchStartY - touchEndY;
+                const timeDelta = Date.now() - startTime;
+                
+                // 스와이프 감지 (수평 이동이 수직 이동보다 크고, 충분히 빠른 경우)
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 80 && timeDelta < 400) {
+                    if (deltaX > 0) {
+                        nextPage(); // 오른쪽 스와이프 = 다음 페이지
+                    } else {
+                        previousPage(); // 왼쪽 스와이프 = 이전 페이지
+                    }
+                }
+            }, { passive: true });
+        }
+
+        // UI 토글
+        function toggleUI() {
+            isUIVisible = !isUIVisible;
+            const header = document.getElementById('readerHeader');
+            const nav = document.getElementById('readerNav');
+            
+            if (isUIVisible) {
+                header.classList.add('visible');
+                nav.classList.add('visible');
+            } else {
+                header.classList.remove('visible');
+                nav.classList.remove('visible');
+                // 패널들도 닫기
+                document.getElementById('languagePanel').classList.remove('visible');
+                document.getElementById('settingsPanel').classList.remove('visible');
+            }
+        }
+
+        // 진행률 업데이트
+        function updateProgress() {
+            const progress = pages.length > 0 ? ((currentPage + 1) / pages.length) * 100 : 0;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        // 패널 토글 함수들
+        function toggleLanguagePanel() {
+            const panel = document.getElementById('languagePanel');
+            panel.classList.toggle('visible');
+            document.getElementById('settingsPanel').classList.remove('visible');
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('visible');
+            document.getElementById('languagePanel').classList.remove('visible');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // 설정 함수들
+        function changeFontSize(size) {
+            document.querySelectorAll('.page-content').forEach(el => {
+                el.style.fontSize = size + 'px';
+            });
+            document.getElementById('fontSizeValue').textContent = size + 'px';
+            localStorage.setItem('fontSize', size);
+        }
+
+        function changeLineHeight(height) {
+            document.querySelectorAll('.page-content').forEach(el => {
+                el.style.lineHeight = height;
+            });
+            document.getElementById('lineHeightValue').textContent = height;
+            localStorage.setItem('lineHeight', height);
+        }
+
+        function changeCharsPerPage(chars) {
+            charsPerPage = parseInt(chars);
+            document.getElementById('charsPerPageValue').textContent = chars + '자';
+            localStorage.setItem('charsPerPage', chars);
+            
+            // 페이지 재생성
+            if (currentBook && !isTransitioning) {
+                createPages().then(() => {
+                    showPage(Math.min(currentPage, pages.length - 1));
+                });
+            }
+        }
+
+        function resetSettings() {
+            changeFontSize(18);
+            changeLineHeight(1.8);
+            changeCharsPerPage(1500);
+            document.getElementById('fontSizeSlider').value = 18;
+            document.getElementById('lineHeightSlider').value = 1.8;
+            document.getElementById('charsPerPageSlider').value = 1500;
+        }
+
+        // 저장된 설정 적용
+        function applySavedSettings() {
+            const savedFontSize = localStorage.getItem('fontSize') || '18';
+            const savedLineHeight = localStorage.getItem('lineHeight') || '1.8';
+            const savedCharsPerPage = localStorage.getItem('charsPerPage') || '1500';
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (savedDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            changeFontSize(savedFontSize);
+            changeLineHeight(savedLineHeight);
+            changeCharsPerPage(savedCharsPerPage);
+            
+            document.getElementById('fontSizeSlider').value = savedFontSize;
+            document.getElementById('lineHeightSlider').value = savedLineHeight;
+            document.getElementById('charsPerPageSlider').value = savedCharsPerPage;
+        }
+
+        // 유틸리티 함수들
+        function showError(message) {
+            hideMessage();
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.querySelector('div:nth-child(2)').textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function hideMessage() {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // 키보드 단축키
+        document.addEventListener('keydown', (e) => {
+            if (isTransitioning) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousPage();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextPage();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    nextPage();
+                    break;
+                case 'Escape':
+                    toggleUI();
+                    break;
+            }
+        });
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBook();
+        });
+    </script>
+</body>
+</html>

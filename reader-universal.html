@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>범용 리더기 - 이도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nanum Myeongjo', 'Times New Roman', serif;
+            line-height: 1.8;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            user-select: text;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e2e8f0;
+        }
+
+        .reader-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .reader-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .reader-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .reader-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+            min-height: 100vh;
+        }
+
+        .book-info {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .dark-mode .book-info {
+            background: #2d2d2d;
+            color: #e2e8f0;
+        }
+
+        .book-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-title {
+            font-size: 2rem;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+
+        .dark-mode .book-title {
+            color: #60a5fa;
+        }
+
+        .book-author {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-description {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .dark-mode .book-description {
+            color: #94a3b8;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .dark-mode .lang-btn {
+            background: #374151;
+            color: #d1d5db;
+        }
+
+        .dark-mode .lang-btn.active {
+            background: #3b82f6;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            min-height: 400px;
+        }
+
+        .dark-mode .content-area {
+            background: #2d2d2d;
+            color: #e2e8f0;
+        }
+
+        .chapter-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #1e293b;
+            white-space: pre-wrap;
+        }
+
+        .dark-mode .chapter-content {
+            color: #e2e8f0;
+        }
+
+        .chapter-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .dark-mode .chapter-nav {
+            background: #2d2d2d;
+        }
+
+        .nav-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .chapter-info {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .dark-mode .chapter-info {
+            color: #94a3b8;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .dark-mode .error-message {
+            background: #431c1c;
+            color: #fca5a5;
+        }
+
+        .loading-message {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .dark-mode .loading-message {
+            background: #1e293b;
+            color: #60a5fa;
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: -2px 0 20px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            padding: 2rem;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .dark-mode .settings-panel {
+            background: #2d2d2d;
+            color: #e2e8f0;
+        }
+
+        .setting-group {
+            margin-bottom: 2rem;
+        }
+
+        .setting-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+        }
+
+        @media (max-width: 768px) {
+            .reader-container {
+                padding: 90px 1rem 1rem;
+            }
+            
+            .reader-header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .settings-panel {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="reader-header">
+        <h1 id="bookTitle">범용 리더기</h1>
+        <div class="reader-controls">
+            <a href="books-dynamic.html" class="back-btn">← 목록</a>
+            <button class="control-btn" onclick="toggleSettings()">⚙️ 설정</button>
+            <button class="control-btn" onclick="toggleDarkMode()">🌙 다크모드</button>
+        </div>
+    </header>
+
+    <div class="reader-container">
+        <div class="loading-message" id="loadingMessage">
+            📖 도서를 불러오는 중...
+        </div>
+
+        <div class="error-message" id="errorMessage" style="display: none;">
+            ❌ 도서를 찾을 수 없습니다.
+        </div>
+
+        <div id="bookContent" style="display: none;">
+            <div class="book-info">
+                <div class="book-emoji" id="bookEmoji">📖</div>
+                <h2 class="book-title" id="displayTitle">도서 제목</h2>
+                <p class="book-author" id="displayAuthor">작가 이름</p>
+                <p class="book-description" id="displayDescription">도서 설명</p>
+            </div>
+
+            <div class="language-selector" id="languageSelector">
+                <!-- 동적으로 생성 -->
+            </div>
+
+            <div class="content-area">
+                <div class="chapter-content" id="chapterContent">
+                    내용을 불러오는 중...
+                </div>
+            </div>
+
+            <div class="chapter-nav">
+                <button class="nav-btn" id="prevBtn" onclick="previousChapter()">← 이전</button>
+                <span class="chapter-info" id="chapterInfo">Chapter 1 / 1</span>
+                <button class="nav-btn" id="nextBtn" onclick="nextChapter()">다음 →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 설정 패널 -->
+    <div class="settings-panel" id="settingsPanel">
+        <h3>읽기 설정</h3>
+        
+        <div class="setting-group">
+            <label class="setting-label">글자 크기</label>
+            <input type="range" class="setting-slider" id="fontSizeSlider" min="14" max="24" value="18" onchange="changeFontSize(this.value)">
+            <span id="fontSizeValue">18px</span>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">줄 간격</label>
+            <input type="range" class="setting-slider" id="lineHeightSlider" min="1.4" max="2.2" step="0.1" value="1.8" onchange="changeLineHeight(this.value)">
+            <span id="lineHeightValue">1.8</span>
+        </div>
+        
+        <div class="setting-group">
+            <button class="nav-btn" onclick="resetSettings()" style="width: 100%; margin-top: 1rem;">기본값 복원</button>
+        </div>
+    </div>
+
+    <script>
+        let currentBook = null;
+        let currentLanguage = 'korean';
+        let currentChapter = 0;
+        let chapters = [];
+
+        // URL 파라미터에서 도서 ID와 언어 정보 가져오기
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                bookId: urlParams.get('book'),
+                language: urlParams.get('lang') || 'korean'
+            };
+        }
+
+        // 도서 로드
+        function loadBook() {
+            const params = getUrlParams();
+            if (!params.bookId) {
+                showError('도서 ID가 지정되지 않았습니다.');
+                return;
+            }
+
+            const testBooks = JSON.parse(localStorage.getItem('testBooks') || '[]');
+            currentBook = testBooks.find(book => book.id === params.bookId);
+            
+            if (!currentBook) {
+                showError(`도서 "${params.bookId}"를 찾을 수 없습니다.`);
+                return;
+            }
+
+            currentLanguage = params.language;
+            displayBook();
+        }
+
+        // 도서 표시
+        function displayBook() {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('bookContent').style.display = 'block';
+
+            // 도서 정보 표시
+            document.getElementById('bookTitle').textContent = currentBook.title[currentLanguage] || currentBook.title.korean || '제목 없음';
+            document.getElementById('bookEmoji').textContent = currentBook.emoji || '📖';
+            document.getElementById('displayTitle').textContent = currentBook.title[currentLanguage] || currentBook.title.korean || '제목 없음';
+            document.getElementById('displayAuthor').textContent = currentBook.author[currentLanguage] || currentBook.author.korean || '작가 미상';
+            document.getElementById('displayDescription').textContent = currentBook.description[currentLanguage] || currentBook.description.korean || '설명 없음';
+
+            // 언어 선택기 생성
+            createLanguageSelector();
+
+            // 챕터 파싱 및 표시
+            parseChapters();
+            displayChapter();
+        }
+
+        // 언어 선택기 생성
+        function createLanguageSelector() {
+            const selector = document.getElementById('languageSelector');
+            selector.innerHTML = '';
+
+            const languages = {
+                korean: '🇰🇷 한국어',
+                english: '🇺🇸 English',
+                spanish: '🇪🇸 Español',
+                japanese: '🇯🇵 日本語'
+            };
+
+            Object.keys(languages).forEach(lang => {
+                if (currentBook.title[lang] && currentBook.content[lang]) {
+                    const btn = document.createElement('button');
+                    btn.className = 'lang-btn';
+                    btn.textContent = languages[lang];
+                    if (lang === currentLanguage) btn.classList.add('active');
+                    btn.onclick = () => changeLanguage(lang);
+                    selector.appendChild(btn);
+                }
+            });
+        }
+
+        // 언어 변경
+        function changeLanguage(language) {
+            currentLanguage = language;
+            currentChapter = 0;
+            
+            // 언어 버튼 상태 업데이트
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 도서 정보 업데이트
+            document.getElementById('bookTitle').textContent = currentBook.title[currentLanguage] || currentBook.title.korean;
+            document.getElementById('displayTitle').textContent = currentBook.title[currentLanguage] || currentBook.title.korean;
+            document.getElementById('displayAuthor').textContent = currentBook.author[currentLanguage] || currentBook.author.korean;
+            document.getElementById('displayDescription').textContent = currentBook.description[currentLanguage] || currentBook.description.korean;
+            
+            // 챕터 재파싱 및 표시
+            parseChapters();
+            displayChapter();
+        }
+
+        // 챕터 파싱
+        function parseChapters() {
+            const content = currentBook.content[currentLanguage] || '';
+            
+            if (currentBook.chapters && currentBook.chapters.length > 0) {
+                // 이미 파싱된 챕터가 있는 경우
+                chapters = currentBook.chapters.map(chapter => chapter[currentLanguage] || chapter.korean || '내용 없음');
+            } else {
+                // 내용을 챕터로 분할
+                const chapterRegex = /(?:Chapter\s+\d+|제\s*\d+\s*장|第\s*\d+\s*章|Capítulo\s+\d+)/gi;
+                const parts = content.split(chapterRegex);
+                
+                if (parts.length > 1) {
+                    chapters = parts.slice(1).filter(part => part.trim()).map(part => part.trim());
+                } else {
+                    chapters = [content.trim()];
+                }
+            }
+            
+            if (chapters.length === 0) {
+                chapters = ['내용이 없습니다.'];
+            }
+        }
+
+        // 챕터 표시
+        function displayChapter() {
+            if (chapters.length === 0) return;
+            
+            document.getElementById('chapterContent').textContent = chapters[currentChapter] || '내용이 없습니다.';
+            document.getElementById('chapterInfo').textContent = `Chapter ${currentChapter + 1} / ${chapters.length}`;
+            
+            // 네비게이션 버튼 상태
+            document.getElementById('prevBtn').disabled = currentChapter === 0;
+            document.getElementById('nextBtn').disabled = currentChapter === chapters.length - 1;
+        }
+
+        // 이전 챕터
+        function previousChapter() {
+            if (currentChapter > 0) {
+                currentChapter--;
+                displayChapter();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // 다음 챕터
+        function nextChapter() {
+            if (currentChapter < chapters.length - 1) {
+                currentChapter++;
+                displayChapter();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // 오류 표시
+        function showError(message) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').textContent = '❌ ' + message;
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+
+        // 설정 패널 토글
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('open');
+        }
+
+        // 다크모드 토글
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // 글자 크기 변경
+        function changeFontSize(size) {
+            document.getElementById('chapterContent').style.fontSize = size + 'px';
+            document.getElementById('fontSizeValue').textContent = size + 'px';
+            localStorage.setItem('fontSize', size);
+        }
+
+        // 줄 간격 변경
+        function changeLineHeight(height) {
+            document.getElementById('chapterContent').style.lineHeight = height;
+            document.getElementById('lineHeightValue').textContent = height;
+            localStorage.setItem('lineHeight', height);
+        }
+
+        // 설정 초기화
+        function resetSettings() {
+            changeFontSize(18);
+            changeLineHeight(1.8);
+            document.getElementById('fontSizeSlider').value = 18;
+            document.getElementById('lineHeightSlider').value = 1.8;
+        }
+
+        // 키보드 단축키
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') previousChapter();
+            if (e.key === 'ArrowRight') nextChapter();
+            if (e.key === 'Escape') toggleSettings();
+        });
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 저장된 설정 적용
+            const savedFontSize = localStorage.getItem('fontSize') || '18';
+            const savedLineHeight = localStorage.getItem('lineHeight') || '1.8';
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (savedDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            changeFontSize(savedFontSize);
+            changeLineHeight(savedLineHeight);
+            document.getElementById('fontSizeSlider').value = savedFontSize;
+            document.getElementById('lineHeightSlider').value = savedLineHeight;
+            
+            // 도서 로드
+            loadBook();
+        });
+    </script>
+</body>
+</html>

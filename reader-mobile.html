@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>모바일 리더기 - 이도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nanum Myeongjo', 'Times New Roman', serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            overflow: hidden;
+            height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e2e8f0;
+        }
+
+        /* 상단 헤더 */
+        .reader-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .reader-header.visible {
+            transform: translateY(0);
+        }
+
+        .dark-mode .reader-header {
+            background: rgba(26,26,26,0.95);
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #2563eb;
+            padding: 0.5rem;
+        }
+
+        .book-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dark-mode .book-title {
+            color: #e2e8f0;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .header-btn:active {
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* 메인 리더 컨테이너 */
+        .reader-container {
+            height: 100vh;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .page {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            padding: 80px 2rem 100px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        .page-content {
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: justify;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #64748b;
+            background: rgba(255,255,255,0.8);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .dark-mode .page-number {
+            background: rgba(26,26,26,0.8);
+            color: #94a3b8;
+        }
+
+        /* 하단 내비게이션 */
+        .reader-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .reader-nav.visible {
+            transform: translateY(0);
+        }
+
+        .dark-mode .reader-nav {
+            background: rgba(26,26,26,0.95);
+            border-top-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(37,99,235,0.3);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            box-shadow: none;
+        }
+
+        .nav-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .progress-info {
+            text-align: center;
+            color: #64748b;
+        }
+
+        .chapter-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-info {
+            font-size: 0.8rem;
+        }
+
+        /* 진행률 바 */
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(0,0,0,0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        /* 터치 영역 */
+        .touch-area {
+            position: absolute;
+            top: 60px;
+            bottom: 80px;
+            width: 33.33%;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .touch-left {
+            left: 0;
+        }
+
+        .touch-right {
+            right: 0;
+        }
+
+        .touch-center {
+            left: 33.33%;
+            right: 33.33%;
+        }
+
+        /* 언어 선택 패널 */
+        .language-panel {
+            position: fixed;
+            bottom: -200px;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+            transition: bottom 0.3s ease;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.2);
+        }
+
+        .language-panel.visible {
+            bottom: 0;
+        }
+
+        .dark-mode .language-panel {
+            background: rgba(26,26,26,0.98);
+        }
+
+        .language-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .lang-option {
+            background: #f1f5f9;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+
+        .lang-option.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .dark-mode .lang-option {
+            background: #374151;
+            color: #d1d5db;
+        }
+
+        /* 설정 패널 */
+        .settings-panel {
+            position: fixed;
+            right: -320px;
+            top: 60px;
+            bottom: 80px;
+            width: 300px;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            padding: 2rem;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.2);
+        }
+
+        .settings-panel.visible {
+            right: 0;
+        }
+
+        .dark-mode .settings-panel {
+            background: rgba(26,26,26,0.98);
+        }
+
+        .setting-group {
+            margin-bottom: 2rem;
+        }
+
+        .setting-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .dark-mode .setting-label {
+            color: #e2e8f0;
+        }
+
+        .setting-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .setting-value {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* 스와이프 인디케이터 */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: rgba(37,99,235,0.3);
+            pointer-events: none;
+            transition: all 0.2s;
+            z-index: 5;
+        }
+
+        .swipe-left {
+            left: 2rem;
+        }
+
+        .swipe-right {
+            right: 2rem;
+        }
+
+        /* 로딩 및 오류 메시지 */
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 2rem;
+            max-width: 300px;
+        }
+
+        .loading {
+            color: #2563eb;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .page {
+                padding: 70px 1.5rem 90px;
+            }
+            
+            .page-content {
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+            
+            .settings-panel {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page {
+                padding: 70px 1rem 90px;
+            }
+            
+            .page-content {
+                font-size: 0.95rem;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 진행률 바 -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- 상단 헤더 -->
+    <header class="reader-header" id="readerHeader">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">← </button>
+            <h1 class="book-title" id="bookTitle">도서 로딩 중...</h1>
+        </div>
+        <div class="header-right">
+            <button class="header-btn" onclick="toggleLanguagePanel()">🌍</button>
+            <button class="header-btn" onclick="toggleSettings()">⚙️</button>
+            <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
+        </div>
+    </header>
+
+    <!-- 메인 리더 -->
+    <div class="reader-container">
+        <div class="page-container" id="pageContainer">
+            <!-- 페이지들이 동적으로 생성됨 -->
+        </div>
+
+        <!-- 터치 영역 -->
+        <div class="touch-area touch-left" onclick="previousPage()"></div>
+        <div class="touch-area touch-center" onclick="toggleUI()"></div>
+        <div class="touch-area touch-right" onclick="nextPage()"></div>
+
+        <!-- 스와이프 인디케이터 -->
+        <div class="swipe-indicator swipe-left" id="swipeLeft">‹</div>
+        <div class="swipe-indicator swipe-right" id="swipeRight">›</div>
+
+        <!-- 메시지 영역 -->
+        <div class="message loading" id="loadingMessage">
+            📖 도서를 불러오는 중...<br>
+            <small>잠시만 기다려주세요</small>
+        </div>
+
+        <div class="message error" id="errorMessage" style="display: none;">
+            ❌ 도서를 찾을 수 없습니다.<br>
+            <small>다른 도서를 선택해주세요</small>
+        </div>
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="reader-nav" id="readerNav">
+        <button class="nav-btn" id="prevBtn" onclick="previousPage()">← 이전</button>
+        <div class="progress-info">
+            <div class="chapter-title" id="chapterTitle">Chapter 1</div>
+            <div class="page-info" id="pageInfo">1 / 1</div>
+        </div>
+        <button class="nav-btn" id="nextBtn" onclick="nextPage()">다음 →</button>
+    </nav>
+
+    <!-- 언어 선택 패널 -->
+    <div class="language-panel" id="languagePanel">
+        <h3 style="text-align: center; margin-bottom: 1rem;">언어 선택</h3>
+        <div class="language-options" id="languageOptions">
+            <!-- 동적으로 생성 -->
+        </div>
+    </div>
+
+    <!-- 설정 패널 -->
+    <div class="settings-panel" id="settingsPanel">
+        <h3 style="margin-bottom: 1.5rem;">읽기 설정</h3>
+        
+        <div class="setting-group">
+            <label class="setting-label">글자 크기</label>
+            <input type="range" class="setting-slider" id="fontSizeSlider" 
+                   min="14" max="24" value="18" oninput="changeFontSize(this.value)">
+            <div class="setting-value" id="fontSizeValue">18px</div>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">줄 간격</label>
+            <input type="range" class="setting-slider" id="lineHeightSlider" 
+                   min="1.4" max="2.2" step="0.1" value="1.8" oninput="changeLineHeight(this.value)">
+            <div class="setting-value" id="lineHeightValue">1.8</div>
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">페이지당 글자 수</label>
+            <input type="range" class="setting-slider" id="charsPerPageSlider" 
+                   min="500" max="2000" step="100" value="1000" oninput="changeCharsPerPage(this.value)">
+            <div class="setting-value" id="charsPerPageValue">1000자</div>
+        </div>
+        
+        <button class="nav-btn" onclick="resetSettings()" style="width: 100%; margin-top: 1rem;">
+            기본값 복원
+        </button>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentBook = null;
+        let currentLanguage = 'korean';
+        let currentPage = 0;
+        let pages = [];
+        let isUIVisible = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let charsPerPage = 1000;
+
+        // 책 데이터
+        const languages = {
+            korean: '🇰🇷 한국어',
+            english: '🇺🇸 English', 
+            spanish: '🇪🇸 Español',
+            japanese: '🇯🇵 日本語'
+        };
+
+        // URL 파라미터 파싱
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                bookId: urlParams.get('book'),
+                language: urlParams.get('lang') || 'korean'
+            };
+        }
+
+        // 책 로드
+        async function loadBook() {
+            const params = getUrlParams();
+            if (!params.bookId) {
+                showError('도서 ID가 지정되지 않았습니다.');
+                return;
+            }
+
+            const testBooks = JSON.parse(localStorage.getItem('testBooks') || '[]');
+            currentBook = testBooks.find(book => book.id === params.bookId);
+            
+            if (!currentBook) {
+                showError(`도서 "${params.bookId}"를 찾을 수 없습니다.`);
+                return;
+            }
+
+            currentLanguage = params.language;
+            await initializeReader();
+        }
+
+        // 리더 초기화
+        async function initializeReader() {
+            hideMessage();
+            
+            // 책 제목 설정
+            const title = currentBook.title[currentLanguage] || currentBook.title.korean || '제목 없음';
+            document.getElementById('bookTitle').textContent = title;
+            
+            // 언어 선택기 생성
+            createLanguageSelector();
+            
+            // 페이지 분할 및 생성
+            await createPages();
+            
+            // 첫 페이지 표시
+            showPage(0);
+            
+            // UI 설정 적용
+            applySavedSettings();
+        }
+
+        // 언어 선택기 생성
+        function createLanguageSelector() {
+            const container = document.getElementById('languageOptions');
+            container.innerHTML = '';
+
+            Object.keys(languages).forEach(lang => {
+                if (currentBook.title[lang] && currentBook.content[lang]) {
+                    const btn = document.createElement('button');
+                    btn.className = 'lang-option';
+                    btn.textContent = languages[lang];
+                    if (lang === currentLanguage) btn.classList.add('active');
+                    btn.onclick = () => changeLanguage(lang);
+                    container.appendChild(btn);
+                }
+            });
+        }
+
+        // 언어 변경
+        async function changeLanguage(language) {
+            currentLanguage = language;
+            currentPage = 0;
+            
+            // 언어 버튼 상태 업데이트
+            document.querySelectorAll('.lang-option').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 제목 업데이트
+            const title = currentBook.title[currentLanguage] || currentBook.title.korean;
+            document.getElementById('bookTitle').textContent = title;
+            
+            // 페이지 재생성
+            await createPages();
+            showPage(0);
+            
+            // 패널 닫기
+            toggleLanguagePanel();
+        }
+
+        // 페이지 생성
+        async function createPages() {
+            const content = currentBook.content[currentLanguage] || currentBook.content.korean || '';
+            const container = document.getElementById('pageContainer');
+            
+            // 기존 페이지 제거
+            container.innerHTML = '';
+            pages = [];
+            
+            if (!content.trim()) {
+                pages = ['내용이 없습니다.'];
+            } else {
+                // 텍스트를 페이지 크기에 맞게 분할
+                pages = splitTextIntoPages(content, charsPerPage);
+            }
+            
+            // 페이지 DOM 생성
+            pages.forEach((pageContent, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+                pageDiv.innerHTML = `
+                    <div class="page-content">${pageContent}</div>
+                    <div class="page-number">${index + 1} / ${pages.length}</div>
+                `;
+                container.appendChild(pageDiv);
+            });
+            
+            updateProgress();
+        }
+
+        // 텍스트를 페이지로 분할
+        function splitTextIntoPages(text, maxChars) {
+            const pages = [];
+            const paragraphs = text.split(/\n\s*\n/);
+            let currentPage = '';
+            
+            for (const paragraph of paragraphs) {
+                const trimmedParagraph = paragraph.trim();
+                if (!trimmedParagraph) continue;
+                
+                // 현재 페이지에 추가했을 때 최대 글자 수를 초과하는지 확인
+                if (currentPage.length + trimmedParagraph.length + 2 > maxChars && currentPage.length > 0) {
+                    pages.push(currentPage.trim());
+                    currentPage = trimmedParagraph + '\n\n';
+                } else {
+                    currentPage += trimmedParagraph + '\n\n';
+                }
+            }
+            
+            // 마지막 페이지 추가
+            if (currentPage.trim()) {
+                pages.push(currentPage.trim());
+            }
+            
+            return pages.length > 0 ? pages : [text];
+        }
+
+        // 페이지 표시
+        function showPage(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= pages.length) return;
+            
+            currentPage = pageIndex;
+            const container = document.getElementById('pageContainer');
+            const translateX = -pageIndex * 100;
+            container.style.transform = `translateX(${translateX}vw)`;
+            
+            // 버튼 상태 업데이트
+            document.getElementById('prevBtn').disabled = pageIndex === 0;
+            document.getElementById('nextBtn').disabled = pageIndex === pages.length - 1;
+            
+            // 페이지 정보 업데이트
+            document.getElementById('pageInfo').textContent = `${pageIndex + 1} / ${pages.length}`;
+            document.getElementById('chapterTitle').textContent = `${currentBook.title[currentLanguage] || currentBook.title.korean}`;
+            
+            updateProgress();
+        }
+
+        // 이전 페이지
+        function previousPage() {
+            if (currentPage > 0) {
+                showPage(currentPage - 1);
+                showSwipeIndicator('left');
+            }
+        }
+
+        // 다음 페이지
+        function nextPage() {
+            if (currentPage < pages.length - 1) {
+                showPage(currentPage + 1);
+                showSwipeIndicator('right');
+            }
+        }
+
+        // 스와이프 인디케이터 표시
+        function showSwipeIndicator(direction) {
+            const indicator = document.getElementById(`swipe${direction.charAt(0).toUpperCase() + direction.slice(1)}`);
+            indicator.style.opacity = '0.8';
+            indicator.style.transform = `translateY(-50%) scale(1.2)`;
+            
+            setTimeout(() => {
+                indicator.style.opacity = '0.3';
+                indicator.style.transform = `translateY(-50%) scale(1)`;
+            }, 200);
+        }
+
+        // UI 토글
+        function toggleUI() {
+            isUIVisible = !isUIVisible;
+            const header = document.getElementById('readerHeader');
+            const nav = document.getElementById('readerNav');
+            
+            if (isUIVisible) {
+                header.classList.add('visible');
+                nav.classList.add('visible');
+            } else {
+                header.classList.remove('visible');
+                nav.classList.remove('visible');
+                // 다른 패널들도 닫기
+                document.getElementById('languagePanel').classList.remove('visible');
+                document.getElementById('settingsPanel').classList.remove('visible');
+            }
+        }
+
+        // 진행률 업데이트
+        function updateProgress() {
+            const progress = pages.length > 0 ? ((currentPage + 1) / pages.length) * 100 : 0;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        // 터치 이벤트 처리
+        function initTouchEvents() {
+            const container = document.getElementById('pageContainer');
+            let startTime = 0;
+            
+            container.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                startTime = Date.now();
+            }, { passive: true });
+            
+            container.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchStartX - touchEndX;
+                const deltaY = touchStartY - touchEndY;
+                const timeDelta = Date.now() - startTime;
+                
+                // 빠른 스와이프이고 수평 이동이 수직 이동보다 큰 경우
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50 && timeDelta < 300) {
+                    if (deltaX > 0) {
+                        nextPage(); // 오른쪽으로 스와이프 (다음 페이지)
+                    } else {
+                        previousPage(); // 왼쪽으로 스와이프 (이전 페이지)
+                    }
+                }
+            }, { passive: true });
+        }
+
+        // 패널 토글 함수들
+        function toggleLanguagePanel() {
+            const panel = document.getElementById('languagePanel');
+            panel.classList.toggle('visible');
+            document.getElementById('settingsPanel').classList.remove('visible');
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('visible');
+            document.getElementById('languagePanel').classList.remove('visible');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // 설정 함수들
+        function changeFontSize(size) {
+            document.querySelectorAll('.page-content').forEach(el => {
+                el.style.fontSize = size + 'px';
+            });
+            document.getElementById('fontSizeValue').textContent = size + 'px';
+            localStorage.setItem('fontSize', size);
+        }
+
+        function changeLineHeight(height) {
+            document.querySelectorAll('.page-content').forEach(el => {
+                el.style.lineHeight = height;
+            });
+            document.getElementById('lineHeightValue').textContent = height;
+            localStorage.setItem('lineHeight', height);
+        }
+
+        function changeCharsPerPage(chars) {
+            charsPerPage = parseInt(chars);
+            document.getElementById('charsPerPageValue').textContent = chars + '자';
+            localStorage.setItem('charsPerPage', chars);
+            
+            // 페이지 재생성
+            if (currentBook) {
+                createPages().then(() => {
+                    showPage(Math.min(currentPage, pages.length - 1));
+                });
+            }
+        }
+
+        function resetSettings() {
+            changeFontSize(18);
+            changeLineHeight(1.8);
+            changeCharsPerPage(1000);
+            document.getElementById('fontSizeSlider').value = 18;
+            document.getElementById('lineHeightSlider').value = 1.8;
+            document.getElementById('charsPerPageSlider').value = 1000;
+        }
+
+        // 저장된 설정 적용
+        function applySavedSettings() {
+            const savedFontSize = localStorage.getItem('fontSize') || '18';
+            const savedLineHeight = localStorage.getItem('lineHeight') || '1.8';
+            const savedCharsPerPage = localStorage.getItem('charsPerPage') || '1000';
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (savedDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            changeFontSize(savedFontSize);
+            changeLineHeight(savedLineHeight);
+            changeCharsPerPage(savedCharsPerPage);
+            
+            document.getElementById('fontSizeSlider').value = savedFontSize;
+            document.getElementById('lineHeightSlider').value = savedLineHeight;
+            document.getElementById('charsPerPageSlider').value = savedCharsPerPage;
+        }
+
+        // 유틸리티 함수들
+        function showError(message) {
+            hideMessage();
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = '❌ ' + message + '\n다른 도서를 선택해주세요';
+            errorEl.style.display = 'block';
+        }
+
+        function hideMessage() {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // 키보드 단축키
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousPage();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextPage();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    nextPage();
+                    break;
+                case 'Escape':
+                    toggleUI();
+                    break;
+            }
+        });
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            initTouchEvents();
+            loadBook();
+        });
+    </script>
+</body>
+</html>

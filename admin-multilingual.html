@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다국어 콘텐츠 관리자 - 이도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nanum Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: #f1f5f9;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #e2e8f0;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: 'Nanum Gothic', monospace;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-success {
+            background: #059669;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn.active {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: white;
+        }
+
+        .chapter-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .chapter-item:last-child {
+            border-bottom: none;
+        }
+
+        .chapter-item.active {
+            background: #dbeafe;
+            border-radius: 4px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            background: #2563eb;
+            height: 100%;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-nav {
+                flex-direction: column;
+            }
+        }
+
+        .preview-panel {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .json-output {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1>🌍 다국어 콘텐츠 관리자</h1>
+        <p>한국고전문학 이북 리더기 다국어 콘텐츠 관리 시스템</p>
+    </div>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="admin-nav">
+            <button class="nav-tab active" onclick="showTab('content-editor')">📝 콘텐츠 편집기</button>
+            <button class="nav-tab" onclick="showTab('book-manager')">📚 도서 관리</button>
+            <button class="nav-tab" onclick="showTab('language-settings')">🌐 언어 설정</button>
+            <button class="nav-tab" onclick="showTab('export-import')">💾 내보내기/가져오기</button>
+            <button class="nav-tab" onclick="showTab('preview')">👁️ 미리보기</button>
+        </div>
+
+        <!-- Content Editor Tab -->
+        <div id="content-editor-tab" class="tab-content active">
+            <h2 class="section-title">📝 다국어 콘텐츠 편집기</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-books">4</div>
+                    <div class="stat-label">총 도서 수</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-languages">4</div>
+                    <div class="stat-label">지원 언어</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-chapters">0</div>
+                    <div class="stat-label">총 챕터 수</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completion-rate">0%</div>
+                    <div class="stat-label">번역 완료율</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div>
+                    <div class="form-group">
+                        <label class="form-label">도서 선택</label>
+                        <select class="form-select" id="book-select" onchange="loadBookData()">
+                            <option value="">도서를 선택하세요</option>
+                            <option value="chunhyang">춘향전</option>
+                            <option value="simcheong">심청전</option>
+                            <option value="heungbu">흥부전</option>
+                            <option value="jusaeng">주생전</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">언어 선택</label>
+                        <div class="language-selector">
+                            <button class="lang-btn active" data-lang="korean" onclick="selectLanguage('korean')">🇰🇷 한국어</button>
+                            <button class="lang-btn" data-lang="english" onclick="selectLanguage('english')">🇺🇸 English</button>
+                            <button class="lang-btn" data-lang="spanish" onclick="selectLanguage('spanish')">🇪🇸 Español</button>
+                            <button class="lang-btn" data-lang="japanese" onclick="selectLanguage('japanese')">🇯🇵 日本語</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">챕터 목록</label>
+                        <div class="chapter-list" id="chapter-list">
+                            <div class="alert-info alert">도서를 선택하면 챕터 목록이 표시됩니다.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-group">
+                        <label class="form-label">현재 챕터: <span id="current-chapter">선택되지 않음</span></label>
+                        <input type="text" class="form-input" id="chapter-title" placeholder="챕터 제목을 입력하세요">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">챕터 내용</label>
+                        <textarea class="form-textarea" id="chapter-content" placeholder="챕터 내용을 입력하세요. 각 문단을 새 줄로 구분해주세요." style="min-height: 300px;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-success" onclick="saveChapter()">💾 챕터 저장</button>
+                        <button class="btn btn-secondary" onclick="clearForm()">🗑️ 초기화</button>
+                        <button class="btn" onclick="addNewChapter()">➕ 새 챕터 추가</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Manager Tab -->
+        <div id="book-manager-tab" class="tab-content">
+            <h2 class="section-title">📚 도서 관리</h2>
+            
+            <div class="form-group">
+                <label class="form-label">새 도서 추가</label>
+                <input type="text" class="form-input" id="new-book-id" placeholder="도서 ID (영문, 소문자)">
+                <input type="text" class="form-input" id="new-book-title" placeholder="도서 제목" style="margin-top: 0.5rem;">
+                <input type="text" class="form-input" id="new-book-author" placeholder="저자" style="margin-top: 0.5rem;">
+                <textarea class="form-textarea" id="new-book-description" placeholder="도서 설명"></textarea>
+                <button class="btn" onclick="createNewBook()">📖 새 도서 생성</button>
+            </div>
+
+            <div class="alert-info alert">
+                <strong>💡 팁:</strong> 
+                도서 ID는 영문 소문자로만 입력하세요. (예: jusaeng, chunhyang)<br>
+                새 도서를 생성하면 기본 챕터 구조가 자동으로 만들어집니다.
+            </div>
+        </div>
+
+        <!-- Language Settings Tab -->
+        <div id="language-settings-tab" class="tab-content">
+            <h2 class="section-title">🌐 언어 설정</h2>
+            
+            <div class="alert-info alert">
+                <strong>지원 언어:</strong>
+                <ul style="margin-top: 0.5rem;">
+                    <li>🇰🇷 한국어 (Korean) - 기본 언어</li>
+                    <li>🇺🇸 영어 (English)</li>
+                    <li>🇪🇸 스페인어 (Español)</li>
+                    <li>🇯🇵 일본어 (日本語)</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">번역 진행 상황</label>
+                <div id="translation-progress">
+                    <!-- 번역 진행률이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Export/Import Tab -->
+        <div id="export-import-tab" class="tab-content">
+            <h2 class="section-title">💾 내보내기/가져오기</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>📤 데이터 내보내기</h3>
+                    <div class="form-group">
+                        <label class="form-label">내보낼 도서 선택</label>
+                        <select class="form-select" id="export-book-select">
+                            <option value="">도서 선택</option>
+                            <option value="all">모든 도서</option>
+                            <option value="chunhyang">춘향전</option>
+                            <option value="simcheong">심청전</option>
+                            <option value="heungbu">흥부전</option>
+                            <option value="jusaeng">주생전</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="exportData()">📥 JSON 파일로 내보내기</button>
+                </div>
+
+                <div>
+                    <h3>📥 데이터 가져오기</h3>
+                    <div class="form-group">
+                        <label class="form-label">JSON 파일 업로드</label>
+                        <input type="file" class="form-input" id="import-file" accept=".json" onchange="importData()">
+                    </div>
+                    <div class="alert-info alert">
+                        <strong>⚠️ 주의:</strong> 기존 데이터를 덮어쓸 수 있습니다.
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">JSON 데이터 미리보기</label>
+                <div class="json-output" id="json-preview">
+                    데이터를 내보내거나 가져오면 여기에 표시됩니다.
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Tab -->
+        <div id="preview-tab" class="tab-content">
+            <h2 class="section-title">👁️ 리더기 미리보기</h2>
+            
+            <div class="form-group">
+                <label class="form-label">미리보기 설정</label>
+                <select class="form-select" id="preview-book" onchange="updatePreview()">
+                    <option value="">도서 선택</option>
+                    <option value="jusaeng">주생전</option>
+                    <option value="chunhyang">춘향전</option>
+                    <option value="simcheong">심청전</option>
+                    <option value="heungbu">흥부전</option>
+                </select>
+            </div>
+
+            <div class="preview-panel" id="preview-content">
+                <div class="alert-info alert">도서를 선택하면 미리보기가 표시됩니다.</div>
+            </div>
+
+            <div class="form-group">
+                <button class="btn" onclick="generateReaderFile()">🚀 리더기 파일 생성</button>
+                <button class="btn btn-secondary" onclick="testReader()">🧪 리더기 테스트</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentBook = '';
+        let currentLanguage = 'korean';
+        let currentChapter = 1;
+        let bookData = {
+            chunhyang: {
+                title: '춘향전',
+                author: '작자 미상',
+                description: '조선시대 배경의 영원한 사랑 이야기',
+                languages: {
+                    korean: { chapters: [] },
+                    english: { chapters: [] },
+                    spanish: { chapters: [] },
+                    japanese: { chapters: [] }
+                }
+            },
+            simcheong: {
+                title: '심청전',
+                author: '작자 미상',
+                description: '효녀 심청이의 숭고한 효심을 그린 감동적인 작품',
+                languages: {
+                    korean: { chapters: [] },
+                    english: { chapters: [] },
+                    spanish: { chapters: [] },
+                    japanese: { chapters: [] }
+                }
+            },
+            heungbu: {
+                title: '흥부전',
+                author: '작자 미상',
+                description: '착한 마음씨의 흥부와 욕심 많은 놀부의 대조를 통해 선악의 교훈을 전하는 작품',
+                languages: {
+                    korean: { chapters: [] },
+                    english: { chapters: [] },
+                    spanish: { chapters: [] },
+                    japanese: { chapters: [] }
+                }
+            },
+            jusaeng: {
+                title: '주생전',
+                author: '권필(權韠, 1569-1612)',
+                description: '조선 중기 문인 권필이 지은 중국 소설',
+                languages: {
+                    korean: { chapters: [] },
+                    english: { chapters: [] },
+                    spanish: { chapters: [] },
+                    japanese: { chapters: [] }
+                }
+            }
+        };
+
+        // Load data from localStorage
+        function loadStoredData() {
+            const stored = localStorage.getItem('idopress-admin-data');
+            if (stored) {
+                try {
+                    bookData = JSON.parse(stored);
+                } catch (e) {
+                    console.error('데이터 로딩 오류:', e);
+                }
+            }
+            updateStats();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('idopress-admin-data', JSON.stringify(bookData));
+            updateStats();
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Language selection
+        function selectLanguage(language) {
+            currentLanguage = language;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelector(`[data-lang="${language}"]`).classList.add('active');
+            
+            if (currentBook) {
+                loadChapterList();
+                loadChapterContent();
+            }
+        }
+
+        // Book selection
+        function loadBookData() {
+            currentBook = document.getElementById('book-select').value;
+            
+            if (!currentBook) {
+                document.getElementById('chapter-list').innerHTML = 
+                    '<div class="alert-info alert">도서를 선택하면 챕터 목록이 표시됩니다.</div>';
+                clearForm();
+                return;
+            }
+
+            loadChapterList();
+            currentChapter = 1;
+            loadChapterContent();
+        }
+
+        // Load chapter list
+        function loadChapterList() {
+            if (!currentBook || !currentLanguage) return;
+
+            const chapters = bookData[currentBook].languages[currentLanguage].chapters;
+            const listContainer = document.getElementById('chapter-list');
+
+            if (chapters.length === 0) {
+                listContainer.innerHTML = 
+                    '<div class="alert-info alert">아직 챕터가 없습니다. 새 챕터를 추가해주세요.</div>';
+                return;
+            }
+
+            let html = '';
+            chapters.forEach((chapter, index) => {
+                const isActive = index + 1 === currentChapter ? 'active' : '';
+                html += `
+                    <div class="chapter-item ${isActive}" onclick="selectChapter(${index + 1})">
+                        <span>제${index + 1}장: ${chapter.title || '제목 없음'}</span>
+                        <span>${chapter.content ? chapter.content.length : 0}자</span>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+        }
+
+        // Select chapter
+        function selectChapter(chapterNum) {
+            currentChapter = chapterNum;
+            loadChapterList();
+            loadChapterContent();
+        }
+
+        // Load chapter content
+        function loadChapterContent() {
+            if (!currentBook || !currentLanguage) return;
+
+            const chapters = bookData[currentBook].languages[currentLanguage].chapters;
+            const chapter = chapters[currentChapter - 1];
+
+            document.getElementById('current-chapter').textContent = 
+                `${currentBook} - ${currentLanguage} - 제${currentChapter}장`;
+
+            if (chapter) {
+                document.getElementById('chapter-title').value = chapter.title || '';
+                document.getElementById('chapter-content').value = 
+                    Array.isArray(chapter.content) ? chapter.content.join('\n\n') : chapter.content || '';
+            } else {
+                document.getElementById('chapter-title').value = '';
+                document.getElementById('chapter-content').value = '';
+            }
+        }
+
+        // Save chapter
+        function saveChapter() {
+            if (!currentBook || !currentLanguage) {
+                alert('도서와 언어를 선택해주세요.');
+                return;
+            }
+
+            const title = document.getElementById('chapter-title').value.trim();
+            const content = document.getElementById('chapter-content').value.trim();
+
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해주세요.');
+                return;
+            }
+
+            // Ensure chapters array exists
+            if (!bookData[currentBook].languages[currentLanguage].chapters) {
+                bookData[currentBook].languages[currentLanguage].chapters = [];
+            }
+
+            const chapters = bookData[currentBook].languages[currentLanguage].chapters;
+            
+            // Convert content to array of paragraphs
+            const contentArray = content.split('\n\n').filter(p => p.trim());
+
+            const chapterData = {
+                number: currentChapter,
+                title: title,
+                content: contentArray
+            };
+
+            // Ensure array is large enough
+            while (chapters.length < currentChapter) {
+                chapters.push({
+                    number: chapters.length + 1,
+                    title: '',
+                    content: []
+                });
+            }
+
+            chapters[currentChapter - 1] = chapterData;
+            
+            saveData();
+            loadChapterList();
+            
+            showAlert('success', `제${currentChapter}장이 저장되었습니다!`);
+        }
+
+        // Add new chapter
+        function addNewChapter() {
+            if (!currentBook || !currentLanguage) {
+                alert('도서와 언어를 선택해주세요.');
+                return;
+            }
+
+            const chapters = bookData[currentBook].languages[currentLanguage].chapters;
+            const newChapterNum = chapters.length + 1;
+
+            chapters.push({
+                number: newChapterNum,
+                title: `제${newChapterNum}장`,
+                content: []
+            });
+
+            currentChapter = newChapterNum;
+            saveData();
+            loadChapterList();
+            loadChapterContent();
+
+            showAlert('success', `새 챕터(제${newChapterNum}장)가 추가되었습니다!`);
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('chapter-title').value = '';
+            document.getElementById('chapter-content').value = '';
+            document.getElementById('current-chapter').textContent = '선택되지 않음';
+        }
+
+        // Create new book
+        function createNewBook() {
+            const id = document.getElementById('new-book-id').value.trim().toLowerCase();
+            const title = document.getElementById('new-book-title').value.trim();
+            const author = document.getElementById('new-book-author').value.trim();
+            const description = document.getElementById('new-book-description').value.trim();
+
+            if (!id || !title || !author) {
+                alert('ID, 제목, 저자를 모두 입력해주세요.');
+                return;
+            }
+
+            if (bookData[id]) {
+                alert('이미 존재하는 도서 ID입니다.');
+                return;
+            }
+
+            bookData[id] = {
+                title: title,
+                author: author,
+                description: description,
+                languages: {
+                    korean: { chapters: [] },
+                    english: { chapters: [] },
+                    spanish: { chapters: [] },
+                    japanese: { chapters: [] }
+                }
+            };
+
+            // Add to select options
+            const bookSelect = document.getElementById('book-select');
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = title;
+            bookSelect.appendChild(option);
+
+            const exportSelect = document.getElementById('export-book-select');
+            const exportOption = document.createElement('option');
+            exportOption.value = id;
+            exportOption.textContent = title;
+            exportSelect.appendChild(exportOption);
+
+            const previewSelect = document.getElementById('preview-book');
+            const previewOption = document.createElement('option');
+            previewOption.value = id;
+            previewOption.textContent = title;
+            previewSelect.appendChild(previewOption);
+
+            // Clear form
+            document.getElementById('new-book-id').value = '';
+            document.getElementById('new-book-title').value = '';
+            document.getElementById('new-book-author').value = '';
+            document.getElementById('new-book-description').value = '';
+
+            saveData();
+            showAlert('success', `새 도서 "${title}"가 생성되었습니다!`);
+        }
+
+        // Export data
+        function exportData() {
+            const bookId = document.getElementById('export-book-select').value;
+            
+            let exportData;
+            if (bookId === 'all') {
+                exportData = bookData;
+            } else if (bookId && bookData[bookId]) {
+                exportData = { [bookId]: bookData[bookId] };
+            } else {
+                alert('내보낼 도서를 선택해주세요.');
+                return;
+            }
+
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            document.getElementById('json-preview').textContent = jsonStr;
+
+            // Download file
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `idopress-${bookId === 'all' ? 'all-books' : bookId}-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showAlert('success', '데이터가 내보내졌습니다!');
+        }
+
+        // Import data
+        function importData() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Merge with existing data
+                    Object.assign(bookData, importedData);
+                    
+                    saveData();
+                    loadStoredData();
+                    
+                    document.getElementById('json-preview').textContent = 
+                        JSON.stringify(importedData, null, 2);
+                    
+                    showAlert('success', '데이터가 성공적으로 가져와졌습니다!');
+                } catch (error) {
+                    showAlert('error', '파일을 읽는 중 오류가 발생했습니다: ' + error.message);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Generate reader file
+        function generateReaderFile() {
+            const bookId = document.getElementById('preview-book').value;
+            
+            if (!bookId) {
+                alert('미리보기할 도서를 선택해주세요.');
+                return;
+            }
+
+            const book = bookData[bookId];
+            if (!book) {
+                alert('선택한 도서의 데이터가 없습니다.');
+                return;
+            }
+
+            // Generate reader HTML content
+            const readerData = {
+                languages: {
+                    korean: { name: '한국어', code: 'ko' },
+                    english: { name: 'English', code: 'en' },
+                    spanish: { name: 'Español', code: 'es' },
+                    japanese: { name: '日本語', code: 'ja' }
+                },
+                chapters: book.languages
+            };
+
+            const jsonOutput = JSON.stringify(readerData, null, 2);
+            document.getElementById('json-preview').textContent = jsonOutput;
+
+            showAlert('success', `${book.title} 리더기 데이터가 생성되었습니다!`);
+        }
+
+        // Update statistics
+        function updateStats() {
+            let totalChapters = 0;
+            let completedTranslations = 0;
+            let totalTranslations = 0;
+
+            Object.keys(bookData).forEach(bookId => {
+                const book = bookData[bookId];
+                Object.keys(book.languages).forEach(lang => {
+                    const chapters = book.languages[lang].chapters || [];
+                    totalChapters = Math.max(totalChapters, chapters.length);
+                    totalTranslations++;
+                    
+                    if (chapters.length > 0 && chapters.some(ch => ch.content && ch.content.length > 0)) {
+                        completedTranslations++;
+                    }
+                });
+            });
+
+            document.getElementById('total-books').textContent = Object.keys(bookData).length;
+            document.getElementById('total-languages').textContent = 4;
+            document.getElementById('total-chapters').textContent = totalChapters;
+            document.getElementById('completion-rate').textContent = 
+                totalTranslations > 0 ? Math.round((completedTranslations / totalTranslations) * 100) + '%' : '0%';
+        }
+
+        // Show alert
+        function showAlert(type, message) {
+            // Remove existing alerts
+            document.querySelectorAll('.alert').forEach(alert => {
+                if (alert.classList.contains('alert-success') || alert.classList.contains('alert-error')) {
+                    alert.remove();
+                }
+            });
+
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+            alert.textContent = message;
+
+            const container = document.querySelector('.tab-content.active');
+            container.insertBefore(alert, container.firstChild);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Update preview
+        function updatePreview() {
+            const bookId = document.getElementById('preview-book').value;
+            const previewContainer = document.getElementById('preview-content');
+
+            if (!bookId) {
+                previewContainer.innerHTML = 
+                    '<div class="alert-info alert">도서를 선택하면 미리보기가 표시됩니다.</div>';
+                return;
+            }
+
+            const book = bookData[bookId];
+            let html = `<h3>${book.title}</h3><p><strong>저자:</strong> ${book.author}</p><p>${book.description}</p><hr>`;
+
+            // Show chapter preview for each language
+            Object.keys(book.languages).forEach(lang => {
+                const langName = {
+                    korean: '한국어', english: 'English', 
+                    spanish: 'Español', japanese: '日本語'
+                }[lang];
+                
+                const chapters = book.languages[lang].chapters || [];
+                html += `<h4>${langName} (${chapters.length}개 챕터)</h4>`;
+                
+                if (chapters.length > 0) {
+                    chapters.slice(0, 2).forEach((chapter, index) => {
+                        html += `<p><strong>${chapter.title}</strong></p>`;
+                        if (chapter.content && chapter.content.length > 0) {
+                            const preview = Array.isArray(chapter.content) ? 
+                                chapter.content[0] : chapter.content;
+                            html += `<p>${preview.substring(0, 100)}...</p>`;
+                        }
+                    });
+                } else {
+                    html += '<p><em>아직 챕터가 없습니다.</em></p>';
+                }
+                html += '<br>';
+            });
+
+            previewContainer.innerHTML = html;
+        }
+
+        // Test reader
+        function testReader() {
+            const bookId = document.getElementById('preview-book').value;
+            
+            if (!bookId) {
+                alert('테스트할 도서를 선택해주세요.');
+                return;
+            }
+
+            // Open reader in new tab
+            window.open(`read-${bookId}.html`, '_blank');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStoredData();
+            
+            // Show initial stats
+            updateStats();
+        });
+    </script>
+</body>
+</html>

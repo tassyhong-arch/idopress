@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>춘향전 - 한국고전문학관</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif;
+            background: #faf9f7;
+            color: #2c2c2c;
+            line-height: 1.9;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.dark {
+            background: #1a1a1a;
+            color: #e8e6e3;
+        }
+
+        /* 이북리더 컨테이너 */
+        .ebook-reader {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 네비게이션 바 */
+        .reader-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .dark .reader-header {
+            background: rgba(26, 26, 26, 0.95);
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .book-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .book-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dark .book-title {
+            color: #e8e6e3;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+
+        .dark .control-btn {
+            color: #aaa;
+        }
+
+        .dark .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e8e6e3;
+        }
+
+        /* 메인 읽기 영역 */
+        .reading-area {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+        }
+
+        /* 페이지 컨테이너 */
+        .page-container {
+            min-height: calc(100vh - 120px);
+            padding: 40px 30px 80px;
+            background: #fff;
+            margin: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dark .page-container {
+            background: #242424;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 챕터 제목 */
+        .chapter-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #d63384;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 2px solid #d63384;
+            padding-bottom: 15px;
+        }
+
+        .dark .chapter-title {
+            color: #ff6b9d;
+            border-bottom-color: #ff6b9d;
+        }
+
+        /* 본문 텍스트 */
+        .content-text {
+            font-size: 18px;
+            line-height: 1.9;
+            text-align: justify;
+            word-break: keep-all;
+            color: #2c2c2c;
+        }
+
+        .dark .content-text {
+            color: #e8e6e3;
+        }
+
+        .content-text p {
+            margin-bottom: 24px;
+            text-indent: 1.8em;
+        }
+
+        .content-text .dialogue {
+            color: #0066cc;
+            font-style: italic;
+            margin: 20px 0;
+            padding-left: 20px;
+            border-left: 3px solid #0066cc;
+            text-indent: 0;
+        }
+
+        .dark .content-text .dialogue {
+            color: #66b3ff;
+            border-left-color: #66b3ff;
+        }
+
+        .content-text .highlight {
+            background: linear-gradient(120deg, #fff3cd 0%, #fff3cd 100%);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .dark .content-text .highlight {
+            background: linear-gradient(120deg, #4a4003 0%, #4a4003 100%);
+        }
+
+        /* 페이지 네비게이션 */
+        .page-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .dark .page-nav {
+            background: rgba(36, 36, 36, 0.95);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+
+        .nav-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .dark .nav-btn {
+            color: #aaa;
+        }
+
+        .dark .nav-btn:hover {
+            background: #3a3a3a;
+            color: #e8e6e3;
+        }
+
+        .page-info {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .dark .page-info {
+            color: #aaa;
+        }
+
+        /* 설정 패널 */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+            transition: right 0.3s ease;
+            z-index: 200;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .dark .settings-panel {
+            background: #1a1a1a;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .dark .settings-title {
+            color: #e8e6e3;
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .dark .setting-label {
+            color: #ccc;
+        }
+
+        .font-size-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .font-btn {
+            background: #f0f0f0;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .font-btn:hover {
+            background: #d63384;
+            color: white;
+        }
+
+        .dark .font-btn {
+            background: #3a3a3a;
+            color: #e8e6e3;
+        }
+
+        .font-size-display {
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* 라이트/다크 모드 토글 */
+        .theme-toggle {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .dark .theme-toggle {
+            background: #3a3a3a;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 8px 16px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-option.active {
+            background: #d63384;
+            color: white;
+        }
+
+        /* 오버레이 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 터치 영역 */
+        .touch-area {
+            position: absolute;
+            top: 0;
+            bottom: 80px;
+            width: 25%;
+            cursor: pointer;
+        }
+
+        .touch-area.left {
+            left: 0;
+        }
+
+        .touch-area.right {
+            right: 0;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .reader-header {
+                padding: 8px 16px;
+            }
+
+            .page-container {
+                margin: 10px;
+                padding: 30px 20px 60px;
+                border-radius: 12px;
+            }
+
+            .content-text {
+                font-size: 17px;
+                line-height: 1.8;
+            }
+
+            .chapter-title {
+                font-size: 1.2rem;
+            }
+
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .page-nav {
+                bottom: 10px;
+                padding: 6px 16px;
+            }
+        }
+
+        /* 태블릿 최적화 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .reading-area {
+                max-width: 700px;
+            }
+
+            .content-text {
+                font-size: 19px;
+                line-height: 2.0;
+            }
+        }
+
+        /* 애니메이션 */
+        @keyframes pageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .page-container {
+            animation: pageSlide 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="ebook-reader">
+        <!-- 상단 네비게이션 -->
+        <header class="reader-header">
+            <div class="book-info">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <div class="book-title">춘향전</div>
+            </div>
+            <div class="header-controls">
+                <button class="control-btn" onclick="toggleSettings()">⚙️ 설정</button>
+                <button class="control-btn" onclick="toggleBookmarks()">🔖</button>
+            </div>
+        </header>
+
+        <!-- 메인 읽기 영역 -->
+        <main class="reading-area">
+            <div class="page-container" id="pageContainer">
+                <h2 class="chapter-title" id="chapterTitle">제1장 - 이도령과 성춘향의 만남</h2>
+                <div class="content-text" id="contentText">
+                    <p>옛날 조선시대에 <span class="highlight">전라도 남원</span>에 이몽룡이라는 젊은 선비가 있었다. 그는 한양에서 남원 부사로 부임한 이한림의 아들로, 뛰어난 재주와 준수한 외모를 가진 인물이었다.</p>
+                    
+                    <p>어느 봄날, 이몽룡은 방에서 글만 읽고 있기가 답답하여 하인 방자와 함께 광한루로 나들이를 나갔다. 광한루는 남원의 명소로, 아름다운 경치로 유명한 곳이었다.</p>
+                    
+                    <div class="dialogue">"도련님, 오늘 같은 좋은 날씨에 방에만 계시면 어찌 하겠습니까? 광한루에 나가서 봄구경이나 하시지요."</div>
+                    
+                    <p>방자의 권유에 이몽룡은 마침내 밖으로 나서기로 하였다. 광한루에 도착하니 온갖 꽃들이 만발하고 새들이 지저귀는 아름다운 봄 풍경이 펼쳐졌다.</p>
+                    
+                    <p>그때 저 멀리서 <span class="highlight">아름다운 처녀</span>가 걸어오는 것이 보였다. 그녀는 바로 기생 월매의 딸 <span class="highlight">성춘향</span>이었다. 춘향은 그 이름처럼 봄날의 향기를 몸에 지닌 듯 아름다웠다.</p>
+                    
+                    <div class="dialogue">"저 처녀가 누구인고?"</div>
+                    
+                    <div class="dialogue">"도련님, 저는 월매네 딸 춘향이라고 하는데, 남원에서 가장 아름답기로 소문난 처녀입니다."</div>
+                    
+                    <p>이몽룡은 춘향의 아름다움에 한눈에 반하고 말았다. 춘향 또한 이몽룡의 준수한 모습에 마음을 빼앗겼다. 두 사람은 서로를 바라보며 말없이 교감을 나누었다.</p>
+                    
+                    <p>이렇게 해서 이몽룡과 성춘향의 인연이 시작되었으니, 이는 하늘이 맺어준 운명이었다.</p>
+                </div>
+            </div>
+
+            <!-- 터치 네비게이션 영역 -->
+            <div class="touch-area left" onclick="previousPage()"></div>
+            <div class="touch-area right" onclick="nextPage()"></div>
+        </main>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="page-nav">
+            <button class="nav-btn" onclick="previousPage()" id="prevBtn">← 이전</button>
+            <span class="page-info" id="pageInfo">1 / 5</span>
+            <button class="nav-btn" onclick="nextPage()" id="nextBtn">다음 →</button>
+        </nav>
+
+        <!-- 설정 패널 -->
+        <div class="settings-panel" id="settingsPanel">
+            <h3 class="settings-title">읽기 설정</h3>
+            
+            <div class="setting-group">
+                <label class="setting-label">테마</label>
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <div class="theme-option" id="lightTheme">☀️ 라이트</div>
+                    <div class="theme-option active" id="darkTheme">🌙 다크</div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">글자 크기</label>
+                <div class="font-size-control">
+                    <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+                    <span class="font-size-display" id="fontSizeDisplay">18px</span>
+                    <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오버레이 -->
+        <div class="overlay" id="overlay" onclick="closeSettings()"></div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentPage = 1;
+        let totalPages = 5;
+        let currentFontSize = 18;
+        let isDark = false;
+
+        // 챕터 데이터
+        const chapters = {
+            1: {
+                title: "제1장 - 이도령과 성춘향의 만남",
+                content: `<p>옛날 조선시대에 <span class="highlight">전라도 남원</span>에 이몽룡이라는 젊은 선비가 있었다. 그는 한양에서 남원 부사로 부임한 이한림의 아들로, 뛰어난 재주와 준수한 외모를 가진 인물이었다.</p>
+                
+                <p>어느 봄날, 이몽룡은 방에서 글만 읽고 있기가 답답하여 하인 방자와 함께 광한루로 나들이를 나갔다. 광한루는 남원의 명소로, 아름다운 경치로 유명한 곳이었다.</p>
+                
+                <div class="dialogue">"도련님, 오늘 같은 좋은 날씨에 방에만 계시면 어찌 하겠습니까? 광한루에 나가서 봄구경이나 하시지요."</div>
+                
+                <p>방자의 권유에 이몽룡은 마침내 밖으로 나서기로 하였다. 광한루에 도착하니 온갖 꽃들이 만발하고 새들이 지저귀는 아름다운 봄 풍경이 펼쳐졌다.</p>
+                
+                <p>그때 저 멀리서 <span class="highlight">아름다운 처녀</span>가 걸어오는 것이 보였다. 그녀는 바로 기생 월매의 딸 <span class="highlight">성춘향</span>이었다. 춘향은 그 이름처럼 봄날의 향기를 몸에 지닌 듯 아름다웠다.</p>`
+            },
+            2: {
+                title: "제2장 - 사랑의 맹세",
+                content: `<p>이몽룡과 춘향은 서로에게 깊이 빠져들었다. 두 사람은 매일 광한루에서 만나 사랑을 속삭였다.</p>
+                
+                <div class="dialogue">"춘향아, 나와 백년가약을 맺지 않겠느냐?"</div>
+                
+                <div class="dialogue">"도련님, 첩은 미천한 기생의 딸인데 어찌 그런 말씀을..."</div>
+                
+                <p>이몽룡은 춘향의 손을 잡으며 진심을 전했다. <span class="highlight">신분의 차이</span>를 뛰어넘는 진정한 사랑이었다.</p>`
+            },
+            3: {
+                title: "제3장 - 이별의 아픔",  
+                content: `<p>그러던 어느 날, 이몽룡의 아버지가 한양으로 전근 명령을 받았다. 갑작스런 이별 앞에서 두 사람은 눈물을 흘렸다.</p>
+                
+                <div class="dialogue">"춘향아, 내가 과거에 급제하여 다시 돌아올 때까지 기다려다오."</div>
+                
+                <p>춘향은 <span class="highlight">절개를 지키겠다</span>고 맹세하며 이몽룡을 보냈다.</p>`
+            },
+            4: {
+                title: "제4장 - 변학도의 핍박",
+                content: `<p>이몽룡이 떠난 후, 새로 부임한 <span class="highlight">변학도 사또</span>는 춘향의 아름다움에 욕심을 냈다.</p>
+                
+                <div class="dialogue">"춘향이를 내 방으로 불러들이너라!"</div>
+                
+                <p>하지만 춘향은 이를 거절하며 이몽룡에 대한 절개를 지켰다. 화가 난 변학도는 춘향을 감옥에 가두었다.</p>`
+            },
+            5: {
+                title: "제5장 - 어사출도와 해피엔딩",
+                content: `<p>마침내 과거에 급제한 이몽룡이 <span class="highlight">암행어사</span>가 되어 남원에 나타났다.</p>
+                
+                <div class="dialogue">"변학도! 네 죄를 네가 알렸다!"</div>
+                
+                <p>어사출도로 변학도를 처벌하고 춘향을 구한 이몽룡. 두 사람은 마침내 진정한 사랑을 이루게 되었다.</p>
+                
+                <p><span class="highlight">사랑과 의리</span>가 승리한 아름다운 결말이었다.</p>`
+            }
+        };
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', function() {
+            loadUserSettings();
+            updatePage();
+        });
+
+        // 페이지 업데이트
+        function updatePage() {
+            const chapter = chapters[currentPage];
+            document.getElementById('chapterTitle').textContent = chapter.title;
+            document.getElementById('contentText').innerHTML = chapter.content;
+            document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
+            
+            // 버튼 상태 업데이트
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            
+            // 페이지 애니메이션
+            const container = document.getElementById('pageContainer');
+            container.style.animation = 'none';
+            container.offsetHeight; // 강제 리플로우
+            container.style.animation = 'pageSlide 0.4s ease';
+            
+            saveUserSettings();
+        }
+
+        // 다음 페이지
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePage();
+            }
+        }
+
+        // 이전 페이지  
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePage();
+            }
+        }
+
+        // 설정 패널 토글
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('overlay');
+            
+            panel.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsPanel').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // 테마 전환
+        function toggleTheme() {
+            isDark = !isDark;
+            document.body.classList.toggle('dark');
+            
+            const lightBtn = document.getElementById('lightTheme');
+            const darkBtn = document.getElementById('darkTheme');
+            
+            if (isDark) {
+                lightBtn.classList.remove('active');
+                darkBtn.classList.add('active');
+            } else {
+                darkBtn.classList.remove('active');  
+                lightBtn.classList.add('active');
+            }
+            
+            saveUserSettings();
+        }
+
+        // 글자 크기 조절
+        function changeFontSize(delta) {
+            currentFontSize += delta * 2;
+            currentFontSize = Math.max(14, Math.min(26, currentFontSize));
+            
+            document.getElementById('contentText').style.fontSize = currentFontSize + 'px';
+            document.getElementById('fontSizeDisplay').textContent = currentFontSize + 'px';
+            
+            saveUserSettings();
+        }
+
+        // 북마크 토글
+        function toggleBookmarks() {
+            alert('🔖 북마크 기능은 곧 추가될 예정입니다!');
+        }
+
+        // 뒤로 가기
+        function goBack() {
+            window.location.href = 'books.html';
+        }
+
+        // 사용자 설정 저장
+        function saveUserSettings() {
+            const settings = {
+                currentPage: currentPage,
+                fontSize: currentFontSize,
+                isDark: isDark
+            };
+            localStorage.setItem('chunhyang_reader_settings', JSON.stringify(settings));
+        }
+
+        // 사용자 설정 로드
+        function loadUserSettings() {
+            const saved = localStorage.getItem('chunhyang_reader_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                currentPage = settings.currentPage || 1;
+                currentFontSize = settings.fontSize || 18;
+                isDark = settings.isDark || false;
+                
+                // 설정 적용
+                document.getElementById('contentText').style.fontSize = currentFontSize + 'px';
+                document.getElementById('fontSizeDisplay').textContent = currentFontSize + 'px';
+                
+                if (isDark) {
+                    document.body.classList.add('dark');
+                    document.getElementById('lightTheme').classList.remove('active');
+                    document.getElementById('darkTheme').classList.add('active');
+                }
+            }
+        }
+
+        // 키보드 단축키
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    previousPage();
+                    break;
+                case 'ArrowRight':
+                    nextPage();
+                    break;
+                case 'Escape':
+                    closeSettings();
+                    break;
+            }
+        });
+
+        // 터치/스와이프 지원
+        let touchStartX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > 50) { // 50px 이상 스와이프
+                if (diff > 0) {
+                    nextPage(); // 왼쪽 스와이프 = 다음 페이지
+                } else {
+                    previousPage(); // 오른쪽 스와이프 = 이전 페이지
+                }
+            }
+        });
+    </script>
+</body>
+</html>

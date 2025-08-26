@@ -46,4 +46,5 @@ next-env.d.ts
 
 # large binaries and cache
 .next/cache/
-node_modules/
+node_modules/node_modules/
+package-lock.json

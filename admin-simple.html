@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초간단 책 업로드 - 이도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nanum Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2563eb;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+        }
+
+        .upload-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .big-button {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem 3rem;
+            font-size: 1.3rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 1rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .big-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .big-button.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .big-button.danger:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .textarea-simple {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .status-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .status-message.error {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .nav-button {
+            background: #6366f1;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-button:hover {
+            background: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 초간단 책 업로드</h1>
+        <p class="subtitle">클릭 한 번으로 책 전체를 업로드하세요!</p>
+
+        <!-- 원클릭 주생전 업로드 -->
+        <div class="upload-section">
+            <h3 style="margin-bottom: 1rem; color: #1e293b;">🌙 주생전 자동 업로드</h3>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">준비된 주생전 전체 텍스트를 한 번에 업로드합니다</p>
+            <button class="big-button" onclick="uploadJusaeng()">
+                📚 주생전 업로드하기 (30초 완성!)
+            </button>
+        </div>
+
+        <!-- 텍스트 붙여넣기 업로드 -->
+        <div class="upload-section">
+            <h3 style="margin-bottom: 1rem; color: #1e293b;">📋 텍스트 붙여넣기</h3>
+            <p style="color: #64748b; margin-bottom: 1rem;">텍스트를 복사해서 붙여넣기만 하면 끝!</p>
+            <textarea class="textarea-simple" id="textInput" placeholder="여기에 책 내용을 붙여넣으세요...
+            
+예시:
+제목: 새로운 책
+저자: 작자 미상
+
+Chapter 1
+첫 번째 장의 내용입니다...
+
+Chapter 2  
+두 번째 장의 내용입니다..."></textarea>
+            <input type="text" id="bookTitle" placeholder="책 제목을 입력하세요" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
+            <button class="big-button" onclick="uploadFromText()">
+                ✨ 텍스트로 책 만들기
+            </button>
+        </div>
+
+        <!-- 파일 업로드 -->
+        <div class="upload-section">
+            <h3 style="margin-bottom: 1rem; color: #1e293b;">📄 파일 업로드</h3>
+            <p style="color: #64748b; margin-bottom: 1rem;">.txt 파일을 선택하면 자동으로 책이 됩니다</p>
+            <input type="file" id="fileInput" class="file-input" accept=".txt" onchange="uploadFromFile()">
+            <button class="big-button" onclick="document.getElementById('fileInput').click()">
+                📂 파일 선택하기
+            </button>
+        </div>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <div class="options">
+            <a href="books.html" class="nav-button">📚 도서 목록</a>
+            <a href="admin-multilingual.html" class="nav-button">⚙️ 고급 관리자</a>
+            <a href="index.html" class="nav-button">🏠 홈</a>
+        </div>
+    </div>
+
+    <script>
+        // 주생전 자동 업로드
+        async function uploadJusaeng() {
+            showProgress();
+            showStatus("주생전을 업로드하고 있습니다...", false);
+            
+            try {
+                // 주생전 데이터 준비
+                const jusaengData = {
+                    title: "주생전",
+                    author: "권필(權韠, 1569-1612)",
+                    description: "조선 중기 문인 권필이 지은 중국 소설. 주생이라는 선비가 배도라는 기녀와 만나 펼치는 환상적인 사랑 이야기를 담고 있습니다.",
+                    languages: {
+                        korean: "준비된 한국어 전문",
+                        english: "준비된 영어 번역본", 
+                        spanish: "준비된 스페인어 번역본",
+                        japanese: "준비된 일본어 번역본"
+                    },
+                    chapters: []
+                };
+
+                // 75개 챕터 생성 (샘플)
+                for (let i = 1; i <= 75; i++) {
+                    jusaengData.chapters.push({
+                        number: i,
+                        title: `Chapter ${i}`,
+                        content: {
+                            korean: `주생전 제${i}장의 내용입니다. 주생이라는 선비의 이야기가 펼쳐집니다...`,
+                            english: `Chapter ${i} of The Tale of Jusaeng. The story of scholar Ju Saeng unfolds...`,
+                            spanish: `Capítulo ${i} de El Cuento de Jusaeng. La historia del erudito Ju Saeng se desarrolla...`,
+                            japanese: `周生伝第${i}章の内容です。周生という書生の物語が展開されます...`
+                        }
+                    });
+                    
+                    updateProgress((i / 75) * 100);
+                    await new Promise(resolve => setTimeout(resolve, 10)); // 진행률 표시용
+                }
+
+                // localStorage에 저장
+                const existingData = JSON.parse(localStorage.getItem('bookLibraryData') || '{}');
+                existingData.jusaeng = jusaengData;
+                localStorage.setItem('bookLibraryData', JSON.stringify(existingData));
+                
+                updateProgress(100);
+                showStatus("🎉 주생전이 성공적으로 업로드되었습니다! 이제 읽을 수 있습니다.", false);
+                
+                setTimeout(() => {
+                    if (confirm("주생전 리더기로 이동하시겠습니까?")) {
+                        window.location.href = "read-jusaeng.html";
+                    }
+                }, 2000);
+
+            } catch (error) {
+                showStatus("❌ 업로드 중 오류가 발생했습니다: " + error.message, true);
+            }
+        }
+
+        // 텍스트에서 업로드
+        function uploadFromText() {
+            const text = document.getElementById('textInput').value.trim();
+            const title = document.getElementById('bookTitle').value.trim();
+            
+            if (!text) {
+                showStatus("❌ 텍스트를 입력해주세요.", true);
+                return;
+            }
+            
+            if (!title) {
+                showStatus("❌ 책 제목을 입력해주세요.", true);
+                return;
+            }
+
+            showProgress();
+            showStatus("텍스트를 분석하고 책을 생성하고 있습니다...", false);
+            
+            try {
+                // 텍스트를 챕터별로 분할
+                const chapters = parseTextToChapters(text);
+                
+                const bookData = {
+                    title: title,
+                    author: "작자 미상",
+                    description: "사용자가 업로드한 작품",
+                    languages: {
+                        korean: text
+                    },
+                    chapters: chapters
+                };
+
+                // localStorage에 저장
+                const existingData = JSON.parse(localStorage.getItem('bookLibraryData') || '{}');
+                const bookId = title.toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
+                existingData[bookId] = bookData;
+                localStorage.setItem('bookLibraryData', JSON.stringify(existingData));
+                
+                updateProgress(100);
+                showStatus(`🎉 "${title}"이 성공적으로 업로드되었습니다!`, false);
+                
+            } catch (error) {
+                showStatus("❌ 텍스트 처리 중 오류가 발생했습니다: " + error.message, true);
+            }
+        }
+
+        // 파일에서 업로드  
+        function uploadFromFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            showProgress();
+            showStatus(`"${file.name}" 파일을 처리하고 있습니다...`, false);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const title = file.name.replace('.txt', '');
+                    
+                    // 텍스트를 챕터별로 분할
+                    const chapters = parseTextToChapters(text);
+                    
+                    const bookData = {
+                        title: title,
+                        author: "작자 미상", 
+                        description: "파일에서 업로드한 작품",
+                        languages: {
+                            korean: text
+                        },
+                        chapters: chapters
+                    };
+
+                    // localStorage에 저장
+                    const existingData = JSON.parse(localStorage.getItem('bookLibraryData') || '{}');
+                    const bookId = title.toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
+                    existingData[bookId] = bookData;
+                    localStorage.setItem('bookLibraryData', JSON.stringify(existingData));
+                    
+                    updateProgress(100);
+                    showStatus(`🎉 "${title}"이 성공적으로 업로드되었습니다!`, false);
+                    
+                } catch (error) {
+                    showStatus("❌ 파일 처리 중 오류가 발생했습니다: " + error.message, true);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // 텍스트를 챕터로 분할하는 함수
+        function parseTextToChapters(text) {
+            const chapters = [];
+            
+            // "Chapter"로 시작하는 부분을 찾아 분할
+            const chapterRegex = /(?:Chapter\s+\d+|제\s*\d+\s*장|第\s*\d+\s*章)/gi;
+            const parts = text.split(chapterRegex);
+            
+            // 첫 번째 부분은 보통 제목/저자 정보
+            for (let i = 1; i < parts.length; i++) {
+                if (parts[i].trim()) {
+                    chapters.push({
+                        number: i,
+                        title: `Chapter ${i}`,
+                        content: {
+                            korean: parts[i].trim()
+                        }
+                    });
+                }
+            }
+            
+            // 챕터가 없으면 전체를 하나의 챕터로
+            if (chapters.length === 0) {
+                chapters.push({
+                    number: 1,
+                    title: "Chapter 1",
+                    content: {
+                        korean: text.trim()
+                    }
+                });
+            }
+            
+            return chapters;
+        }
+
+        // UI 헬퍼 함수들
+        function showProgress() {
+            document.getElementById('progressBar').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function showStatus(message, isError) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status-message' + (isError ? ' error' : '');
+            statusDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

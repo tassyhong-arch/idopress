@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이도 - 한국 고전문학 디지털 도서관</title>
+    <meta name="description" content="한국 고전문학을 4개 언어로 만나는 디지털 도서관">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-nav a {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .header-nav a:hover {
+            color: #007bff;
+            background-color: #f8f9ff;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            min-height: calc(100vh - 84px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #6c757d;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #f8f9ff;
+            color: #007bff;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #e7f3ff;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .category-section {
+            margin-top: 30px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .content-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .view-toggle {
+            display: flex;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 3px;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .view-btn.active {
+            background-color: #fff;
+            color: #007bff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        /* Book Table */
+        .book-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .book-table th {
+            background-color: #f8f9fa;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .book-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .book-table tbody tr:hover {
+            background-color: #f8f9ff;
+        }
+
+        .book-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .book-cover {
+            width: 40px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .book-title {
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .book-title:hover {
+            color: #007bff;
+        }
+
+        .book-author {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .book-category {
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #6c757d;
+            display: inline-block;
+        }
+
+        .progress-bar {
+            width: 80px;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .action-btn.primary {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .action-btn.primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Language Tags */
+        .language-tags {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .lang-tag {
+            background-color: #e7f3ff;
+            color: #007bff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .stats-info {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bulk-actions select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+
+            .content-area {
+                order: 1;
+                padding: 20px;
+            }
+
+            .search-box {
+                width: 200px;
+            }
+
+            .header-nav {
+                display: none;
+            }
+
+            .book-table {
+                font-size: 13px;
+            }
+
+            .book-table th,
+            .book-table td {
+                padding: 10px 8px;
+            }
+
+            .content-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #007bff;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,123,255,0.4);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">📚 이도</a>
+            
+            <nav class="header-nav">
+                <a href="#" onclick="filterBooks('all')">전체 도서</a>
+                <a href="#" onclick="filterBooks('classical')">고전문학</a>
+                <a href="#" onclick="filterBooks('modern')">현대문학</a>
+                <a href="admin-test.html">업로드</a>
+            </nav>
+
+            <div class="user-menu">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="도서명, 작가명으로 검색..." id="searchInput">
+                    <button class="search-btn" onclick="searchBooks()">🔍</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>📖 도서관</h3>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="showSection('library')">📚 전체 도서</a></li>
+                <li><a href="#" onclick="showSection('recent')">🕐 최근 읽은 책</a></li>
+                <li><a href="#" onclick="showSection('favorites')">❤️ 즐겨찾기</a></li>
+                <li><a href="#" onclick="showSection('reading')">📖 읽는 중</a></li>
+                <li><a href="#" onclick="showSection('completed')">✅ 완독</a></li>
+            </ul>
+
+            <div class="category-section">
+                <h3>📂 카테고리</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="filterBooks('classical')">📜 고전문학</a></li>
+                    <li><a href="#" onclick="filterBooks('novel')">📖 소설</a></li>
+                    <li><a href="#" onclick="filterBooks('poetry')">🎭 시가</a></li>
+                    <li><a href="#" onclick="filterBooks('history')">📚 역사</a></li>
+                </ul>
+            </div>
+
+            <div class="category-section">
+                <h3>🌍 언어</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="filterByLanguage('korean')">🇰🇷 한국어</a></li>
+                    <li><a href="#" onclick="filterByLanguage('english')">🇺🇸 English</a></li>
+                    <li><a href="#" onclick="filterByLanguage('japanese')">🇯🇵 日本語</a></li>
+                    <li><a href="#" onclick="filterByLanguage('spanish')">🇪🇸 Español</a></li>
+                </ul>
+            </div>
+
+            <div class="category-section">
+                <h3>⚙️ 관리</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="admin-test.html">🧪 테스트 업로드</a></li>
+                    <li><a href="admin-simple.html">🚀 간편 업로드</a></li>
+                    <li><a href="admin-multilingual.html">⚙️ 고급 관리</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="content-header">
+                <h1 class="content-title">전체 도서 목록</h1>
+                <div class="content-actions">
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="changeView('table')">📋</button>
+                        <button class="view-btn" onclick="changeView('grid')">⊞</button>
+                    </div>
+                    <select class="sort-select" id="sortSelect" onchange="sortBooks()">
+                        <option value="title">제목순</option>
+                        <option value="author">작가순</option>
+                        <option value="date">등록일순</option>
+                        <option value="progress">진행률순</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stats-info">
+                    총 <strong id="totalBooks">0</strong>권의 도서가 있습니다
+                </div>
+                <div class="bulk-actions">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <label for="selectAll">전체 선택</label>
+                    <select id="bulkAction">
+                        <option value="">일괄 작업</option>
+                        <option value="favorite">즐겨찾기 추가</option>
+                        <option value="download">다운로드</option>
+                        <option value="delete">삭제</option>
+                    </select>
+                    <button class="action-btn" onclick="executeBulkAction()">실행</button>
+                </div>
+            </div>
+
+            <div id="tableView">
+                <table class="book-table">
+                    <thead>
+                        <tr>
+                            <th width="40"></th>
+                            <th width="60">표지</th>
+                            <th>도서 정보</th>
+                            <th width="100">카테고리</th>
+                            <th width="120">언어</th>
+                            <th width="100">진행률</th>
+                            <th width="100">등록일</th>
+                            <th width="120">작업</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookTableBody">
+                        <!-- Books will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>도서 목록을 불러오는 중...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="window.location.href='admin-test.html'" title="새 도서 추가">+</button>
+
+    <script>
+        // Global variables
+        let allBooks = [];
+        let filteredBooks = [];
+        let currentView = 'table';
+        let currentFilter = 'all';
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBooks();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchBooks(e.target.value);
+            });
+        }
+
+        // Load books from localStorage and default books
+        function loadBooks() {
+            showLoading();
+            
+            // Default books (updated to match current files)
+            const defaultBooks = [
+                {
+                    id: 'chunhyang',
+                    title: '춘향전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🌸',
+                    description: '사랑과 의리가 만나는 조선시대 최고의 로맨스',
+                    url: 'read-chunhyang.html'
+                },
+                {
+                    id: 'simcheong',
+                    title: '심청전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🌊',
+                    description: '효심으로 가득한 딸의 감동적인 희생과 사랑',
+                    url: 'read-simcheong.html'
+                },
+                {
+                    id: 'heungbu',
+                    title: '흥부전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🏠',
+                    description: '착함과 욕심의 대비로 보는 인생의 교훈',
+                    url: 'read-heungbu.html'
+                },
+                {
+                    id: 'jusaeng',
+                    title: '주생전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean', 'english', 'japanese', 'spanish'],
+                    progress: 0,
+                    dateAdded: '2024-08-25',
+                    emoji: '💕',
+                    description: '조선시대 기생과 선비의 애절한 사랑 이야기',
+                    url: 'read-jusaeng.html'
+                },
+                {
+                    id: 'reader-natural',
+                    title: '자연스러운 리더기',
+                    author: '이도 시스템',
+                    category: 'system',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-26',
+                    emoji: '📖',
+                    description: '자연스러운 페이지 넘김 애니메이션을 지원하는 현대적 전자책 리더',
+                    url: 'reader-natural.html'
+                }
+            ];
+
+            // Load uploaded books from localStorage
+            const uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+            
+            // Combine all books
+            allBooks = [...defaultBooks, ...uploadedBooks];
+            filteredBooks = [...allBooks];
+            
+            renderBooks();
+            updateStats();
+            hideLoading();
+        }
+
+        // Render books in table format
+        function renderBooks() {
+            const tbody = document.getElementById('bookTableBody');
+            tbody.innerHTML = '';
+
+            filteredBooks.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="book-checkbox" data-book-id="${book.id}">
+                    </td>
+                    <td>
+                        <div class="book-cover">${book.emoji || '📖'}</div>
+                    </td>
+                    <td>
+                        <div class="book-info">
+                            <div class="book-title" onclick="readBook('${book.id}')">${book.title}</div>
+                            <div class="book-author">${book.author}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="book-category">${getCategoryName(book.category)}</span>
+                    </td>
+                    <td>
+                        <div class="language-tags">
+                            ${book.languages.map(lang => `<span class="lang-tag">${getLanguageFlag(lang)}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${book.progress || 0}%"></div>
+                        </div>
+                        <div class="progress-text">${book.progress || 0}%</div>
+                    </td>
+                    <td>${formatDate(book.dateAdded)}</td>
+                    <td>
+                        <a href="#" class="action-btn primary" onclick="readBook('${book.id}')">읽기</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Helper functions
+        function getCategoryName(category) {
+            const names = {
+                'classical': '고전문학',
+                'novel': '소설',
+                'poetry': '시가',
+                'history': '역사',
+                'system': '시스템'
+            };
+            return names[category] || category;
+        }
+
+        function getLanguageFlag(lang) {
+            const flags = {
+                'korean': '🇰🇷',
+                'english': '🇺🇸',
+                'japanese': '🇯🇵',
+                'spanish': '🇪🇸'
+            };
+            return flags[lang] || '🌐';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR');
+        }
+
+        // Book reading function
+        function readBook(bookId) {
+            const book = allBooks.find(b => b.id === bookId);
+            if (!book) {
+                alert('책을 찾을 수 없습니다.');
+                return;
+            }
+
+            // Check if it's an uploaded book
+            const uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+            const uploadedBook = uploadedBooks.find(b => b.id === bookId);
+            
+            if (uploadedBook) {
+                // For uploaded books, use reader-natural.html
+                window.location.href = `reader-natural.html?book=${bookId}&lang=korean`;
+            } else {
+                // For default books, use their specific URLs or reader-natural
+                if (book.url && book.id !== 'reader-natural') {
+                    window.location.href = book.url;
+                } else {
+                    // Use natural reader for system books or as fallback
+                    window.location.href = 'reader-natural.html';
+                }
+            }
+        }
+
+        // Search functionality
+        function searchBooks(query = '') {
+            const searchTerm = query || document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm.trim()) {
+                filteredBooks = [...allBooks];
+            } else {
+                filteredBooks = allBooks.filter(book => 
+                    book.title.toLowerCase().includes(searchTerm) ||
+                    book.author.toLowerCase().includes(searchTerm) ||
+                    (book.description && book.description.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderBooks();
+            updateStats();
+        }
+
+        // Filter functions
+        function filterBooks(category) {
+            currentFilter = category;
+            
+            if (category === 'all') {
+                filteredBooks = [...allBooks];
+            } else {
+                filteredBooks = allBooks.filter(book => book.category === category);
+            }
+            
+            renderBooks();
+            updateStats();
+            updateActiveMenu();
+        }
+
+        function filterByLanguage(language) {
+            filteredBooks = allBooks.filter(book => 
+                book.languages && book.languages.includes(language)
+            );
+            
+            renderBooks();
+            updateStats();
+        }
+
+        // Sort functionality
+        function sortBooks() {
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            filteredBooks.sort((a, b) => {
+                switch(sortBy) {
+                    case 'title':
+                        return a.title.localeCompare(b.title);
+                    case 'author':
+                        return a.author.localeCompare(b.author);
+                    case 'date':
+                        return new Date(b.dateAdded) - new Date(a.dateAdded);
+                    case 'progress':
+                        return (b.progress || 0) - (a.progress || 0);
+                    default:
+                        return 0;
+                }
+            });
+            
+            renderBooks();
+        }
+
+        // View toggle
+        function changeView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'grid') {
+                alert('그리드 뷰는 곧 제공될 예정입니다.');
+            }
+        }
+
+        // Bulk actions
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.book-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function executeBulkAction() {
+            const action = document.getElementById('bulkAction').value;
+            const selectedBooks = Array.from(document.querySelectorAll('.book-checkbox:checked'))
+                .map(cb => cb.dataset.bookId);
+            
+            if (!action || selectedBooks.length === 0) {
+                alert('작업을 선택하고 도서를 선택해주세요.');
+                return;
+            }
+            
+            alert(`${selectedBooks.length}권의 도서에 대해 "${action}" 작업을 수행합니다.`);
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalBooks').textContent = filteredBooks.length;
+        }
+
+        // Show/hide sections
+        function showSection(section) {
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(section) {
+                case 'recent':
+                    filteredBooks = allBooks.slice(0, 5);
+                    break;
+                case 'favorites':
+                    filteredBooks = allBooks.filter(book => book.favorite);
+                    break;
+                case 'reading':
+                    filteredBooks = allBooks.filter(book => book.progress > 0 && book.progress < 100);
+                    break;
+                case 'completed':
+                    filteredBooks = allBooks.filter(book => book.progress >= 100);
+                    break;
+                default:
+                    filteredBooks = [...allBooks];
+            }
+            
+            renderBooks();
+            updateStats();
+        }
+
+        function updateActiveMenu() {
+            // Update active menu items
+        }
+
+        // Loading states
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('tableView').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('tableView').style.display = 'block';
+        }
+
+        // Refresh book list
+        function refreshBookList() {
+            loadBooks();
+        }
+
+        // Auto-refresh every 30 seconds to catch new uploads
+        setInterval(refreshBookList, 30000);
+    </script>
+</body>
+</html>

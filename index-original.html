@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이도 - 한국 고전문학의 디지털 공간</title>
+    <meta name="description" content="한국 고전문학을 4개 언어로 만나는 디지털 도서관">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index-simple.html" class="logo">이도</a>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index-library.html" onclick="closeMobileMenu()" style="color: #007bff; font-weight: bold;">📚 라이브러리</a></li>
+                    <li><a href="books.html" onclick="closeMobileMenu()">기본도서</a></li>
+                    <li><a href="books-dynamic.html" onclick="closeMobileMenu()">📚 전체도서</a></li>
+                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
+                    <li><a href="#contact" onclick="closeMobileMenu()">문의</a></li>
+                    <li><a href="admin-test.html" onclick="closeMobileMenu()" style="color: #f59e0b;">🧪 테스트업로드</a></li>
+                    <li><a href="admin-simple.html" onclick="closeMobileMenu()" style="color: #10b981;">🚀 간편업로드</a></li>
+                    <li><a href="admin-multilingual.html" onclick="closeMobileMenu()" style="color: #2563eb;">⚙️ 관리자</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>한국문학의 디지털 여행</h1>
+            <p>천년의 문학 전통을 현대적 감각으로 재해석한 디지털 도서관입니다</p>
+            <a href="index-library.html" class="cta-button">📚 라이브러리 입장</a>
+            <a href="books.html" class="cta-button" style="margin-left: 15px; background-color: #6c757d;">기존 도서 보기</a>
+            
+            <div class="languages">
+                <span class="language-tag">🇰🇷 한국어</span>
+                <span class="language-tag">🇺🇸 English</span>
+                <span class="language-tag">🇯🇵 日本語</span>
+                <span class="language-tag">🇪🇸 Español</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">왜 이도인가요?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>다국어 지원</h3>
+                    <p>한국어, 영어, 일본어, 스페인어로 우리 문학을 전 세계에</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>모바일 최적화</h3>
+                    <p>언제 어디서나 편안하게 읽을 수 있는 반응형 디자인</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🆓</div>
+                    <h3>완전 무료</h3>
+                    <p>회원가입 없이 모든 콘텐츠를 자유롭게 이용하세요</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>직관적 인터페이스</h3>
+                    <p>깔끔하고 사용하기 쉬운 현대적 디자인</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Section -->
+    <section class="books" id="books">
+        <div class="container">
+            <h2 class="section-title">대표 작품</h2>
+            <div class="books-grid">
+                <div class="book-card">
+                    <div class="book-emoji">🌸</div>
+                    <h3>춘향전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">사랑과 의리가 만나는 조선시대 최고의 로맨스</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('chunhyang')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🌊</div>
+                    <h3>심청전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">효심으로 가득한 딸의 감동적인 희생과 사랑</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('simcheong')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日본語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <div class="book-card">
+                    <div class="book-emoji">🏠</div>
+                    <h3>흥부전</h3>
+                    <p class="book-author">작자 미상</p>
+                    <p class="book-description">착함과 욕심의 대비로 보는 인생의 교훈</p>
+                    <div class="book-languages">
+                        <button class="lang-button" onclick="readBook('heungbu')">📖 읽기</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日본語</button>
+                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">함께하는 사람들</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h4>10,000+</h4>
+                    <p>독자</p>
+                </div>
+                <div class="stat-item">
+                    <h4>4</h4>
+                    <p>언어</p>
+                </div>
+                <div class="stat-item">
+                    <h4>6</h4>
+                    <p>작품</p>
+                </div>
+                <div class="stat-item">
+                    <h4>100%</h4>
+                    <p>무료</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>이도</h4>
+                    <p>한국 고전문학을 세계와 공유하는<br>디지털 문학 공간입니다.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>서비스</h4>
+                    <p><a href="books.html">전자책 서비스</a></p>
+                    <p><a href="#" onclick="showComingSoon()">작가 소개</a></p>
+                    <p><a href="#" onclick="showComingSoon()">문학 해설</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>정보</h4>
+                    <p><a href="#" onclick="showComingSoon()">이용약관</a></p>
+                    <p><a href="#" onclick="showComingSoon()">개인정보처리방침</a></p>
+                    <p><a href="#contact" onclick="showContact()">문의하기</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>연락처</h4>
+                    <p>이메일: contact@idopress.com</p>
+                    <p>전화: 02-1234-5678</p>
+                    <p>주소: 서울시 중구 세종대로 110</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 이도. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        function readBook(bookId) {
+            // 이북 리더로 이동
+            const bookUrls = {
+                'chunhyang': 'read-chunhyang.html',
+                'simcheong': 'read-simcheong.html', 
+                'heungbu': 'read-heungbu.html'
+            };
+            
+            if (bookUrls[bookId]) {
+                // 모든 책이 준비됨 (샘플 컨텐츠)
+                window.location.href = bookUrls[bookId];
+            } else {
+                alert(`📚 "${getBookName(bookId)}" 서비스는 곧 제공될 예정입니다!`);
+            }
+        }
+        
+        function getBookName(bookId) {
+            const names = {
+                'chunhyang': '춘향전',
+                'simcheong': '심청전',
+                'heungbu': '흥부전'
+            };
+            return names[bookId] || bookId;
+        }
+    </script>
+</body>
+</html>

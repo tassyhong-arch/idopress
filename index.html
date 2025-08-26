@@ -3,208 +3,1164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이도 - 한국 고전문학의 디지털 공간</title>
+    <title>이도 - 한국 고전문학 디지털 도서관</title>
     <meta name="description" content="한국 고전문학을 4개 언어로 만나는 디지털 도서관">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-nav a {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .header-nav a:hover, .header-nav a.active {
+            color: #007bff;
+            background-color: #f8f9ff;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            z-index: 999;
+        }
+
+        .mobile-nav.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mobile-nav a {
+            display: block;
+            padding: 15px 0;
+            color: #555;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .mobile-nav a:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-nav a:hover {
+            color: #007bff;
+        }
+
+        /* Search Box */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Desktop Library View */
+        .desktop-view {
+            display: flex;
+            gap: 20px;
+            min-height: calc(100vh - 104px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            height: fit-content;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            margin-bottom: 18px;
+            color: #2c3e50;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #6c757d;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #f8f9ff;
+            color: #007bff;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #e7f3ff;
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .category-section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #f1f3f4;
+        }
+
+        .content-area {
+            flex: 1;
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .content-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        /* Mobile Card View */
+        .mobile-view {
+            display: none;
+        }
+
+        .mobile-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            padding: 60px 20px 40px;
+            text-align: center;
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mobile-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-hero p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quick-action-btn {
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .quick-action-btn .icon {
+            font-size: 24px;
+        }
+
+        .mobile-books-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .mobile-book-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.2s;
+        }
+
+        .mobile-book-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .mobile-book-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .mobile-book-emoji {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e7f3ff 100%);
+            border-radius: 12px;
+        }
+
+        .mobile-book-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .mobile-book-info p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .mobile-book-description {
+            color: #8e9aaf;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .mobile-book-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mobile-read-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mobile-read-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+        }
+
+        .mobile-lang-btn {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mobile-lang-btn:hover {
+            background: #e9ecef;
+        }
+
+        /* Book Table (Desktop) */
+        .book-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+        }
+
+        .book-table th {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .book-table td {
+            padding: 18px 15px;
+            border-bottom: 1px solid #f8f9fa;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .book-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .book-table tbody tr:hover {
+            background-color: #f8f9ff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+        }
+
+        .book-cover {
+            width: 45px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .book-title {
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .book-title:hover {
+            color: #007bff;
+        }
+
+        .book-author {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .book-description {
+            color: #8e9aaf;
+            font-size: 12px;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .book-category {
+            background-color: #f1f5f9;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #475569;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .language-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .lang-tag {
+            background-color: #e7f3ff;
+            color: #007bff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #b3d9ff;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+            background-color: #f8f9ff;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border-color: #007bff;
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,123,255,0.25);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+            display: none;
+        }
+
+        .fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-nav {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .search-box {
+                width: 200px;
+            }
+
+            .desktop-view {
+                display: none !important;
+            }
+
+            .mobile-view {
+                display: block !important;
+            }
+
+            .fab {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                height: 56px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .search-box {
+                width: 150px;
+            }
+
+            .mobile-hero {
+                padding: 40px 15px 30px;
+            }
+
+            .mobile-hero h1 {
+                font-size: 2rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="container">
-            <nav class="nav">
-                <a href="index-simple.html" class="logo">이도</a>
-                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="index-library.html" onclick="closeMobileMenu()" style="color: #007bff; font-weight: bold;">📚 라이브러리</a></li>
-                    <li><a href="books.html" onclick="closeMobileMenu()">기본도서</a></li>
-                    <li><a href="books-dynamic.html" onclick="closeMobileMenu()">📚 전체도서</a></li>
-                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
-                    <li><a href="#contact" onclick="closeMobileMenu()">문의</a></li>
-                    <li><a href="admin-test.html" onclick="closeMobileMenu()" style="color: #f59e0b;">🧪 테스트업로드</a></li>
-                    <li><a href="admin-simple.html" onclick="closeMobileMenu()" style="color: #10b981;">🚀 간편업로드</a></li>
-                    <li><a href="admin-multilingual.html" onclick="closeMobileMenu()" style="color: #2563eb;">⚙️ 관리자</a></li>
-                </ul>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span>📚</span>
+                <span>이도</span>
+            </a>
+            
+            <nav class="header-nav">
+                <a href="#" onclick="filterBooks('all')" class="active">전체 도서</a>
+                <a href="#" onclick="filterBooks('classical')">고전문학</a>
+                <a href="#" onclick="filterBooks('modern')">현대문학</a>
+                <a href="admin-test.html">업로드</a>
             </nav>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="도서명, 작가명으로 검색..." id="searchInput">
+                    <button class="search-btn" onclick="searchBooks()">🔍</button>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            </div>
         </div>
+        
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="#" onclick="filterBooks('all'); closeMobileMenu()">📚 전체 도서</a>
+            <a href="#" onclick="filterBooks('classical'); closeMobileMenu()">📜 고전문학</a>
+            <a href="#" onclick="filterBooks('system'); closeMobileMenu()">⚙️ 시스템</a>
+            <a href="admin-test.html" onclick="closeMobileMenu()">📝 업로드</a>
+            <a href="about.html" onclick="closeMobileMenu()">ℹ️ 소개</a>
+        </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>한국문학의 디지털 여행</h1>
-            <p>천년의 문학 전통을 현대적 감각으로 재해석한 디지털 도서관입니다</p>
-            <a href="index-library.html" class="cta-button">📚 라이브러리 입장</a>
-            <a href="books.html" class="cta-button" style="margin-left: 15px; background-color: #6c757d;">기존 도서 보기</a>
-            
-            <div class="languages">
-                <span class="language-tag">🇰🇷 한국어</span>
-                <span class="language-tag">🇺🇸 English</span>
-                <span class="language-tag">🇯🇵 日本語</span>
-                <span class="language-tag">🇪🇸 Español</span>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Desktop Library View -->
+        <div class="desktop-view" id="desktopView">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h3>📖 도서관</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active" onclick="showSection('library')">📚 전체 도서</a></li>
+                    <li><a href="#" onclick="showSection('recent')">🕐 최근 읽은 책</a></li>
+                    <li><a href="#" onclick="showSection('favorites')">❤️ 즐겨찾기</a></li>
+                    <li><a href="#" onclick="showSection('reading')">📖 읽는 중</a></li>
+                    <li><a href="#" onclick="showSection('completed')">✅ 완독</a></li>
+                </ul>
+
+                <div class="category-section">
+                    <h3>📂 카테고리</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="#" onclick="filterBooks('classical')">📜 고전문학</a></li>
+                        <li><a href="#" onclick="filterBooks('novel')">📖 소설</a></li>
+                        <li><a href="#" onclick="filterBooks('poetry')">🎭 시가</a></li>
+                        <li><a href="#" onclick="filterBooks('history')">📚 역사</a></li>
+                        <li><a href="#" onclick="filterBooks('system')">⚙️ 시스템</a></li>
+                    </ul>
+                </div>
+
+                <div class="category-section">
+                    <h3>🌍 언어</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="#" onclick="filterByLanguage('korean')">🇰🇷 한국어</a></li>
+                        <li><a href="#" onclick="filterByLanguage('english')">🇺🇸 English</a></li>
+                        <li><a href="#" onclick="filterByLanguage('japanese')">🇯🇵 日本語</a></li>
+                        <li><a href="#" onclick="filterByLanguage('spanish')">🇪🇸 Español</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <div class="content-header">
+                    <h1 class="content-title">전체 도서 목록</h1>
+                </div>
+
+                <div id="tableView">
+                    <table class="book-table">
+                        <thead>
+                            <tr>
+                                <th width="60">표지</th>
+                                <th>도서 정보</th>
+                                <th width="100">카테고리</th>
+                                <th width="120">언어</th>
+                                <th width="100">등록일</th>
+                                <th width="120">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookTableBody">
+                            <!-- Books will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>도서 목록을 불러오는 중...</p>
+                </div>
+            </main>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="mobile-view" id="mobileView">
+            <div class="mobile-hero">
+                <h1>📚 이도</h1>
+                <p>한국 고전문학을 4개 언어로 만나는 디지털 도서관</p>
+            </div>
+
+            <div class="quick-actions">
+                <a href="#" class="quick-action-btn" onclick="filterBooks('classical')">
+                    <span class="icon">📜</span>
+                    <span>고전문학</span>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="filterBooks('system')">
+                    <span class="icon">⚙️</span>
+                    <span>시스템 도구</span>
+                </a>
+                <a href="admin-test.html" class="quick-action-btn">
+                    <span class="icon">📝</span>
+                    <span>업로드</span>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="filterByLanguage('korean')">
+                    <span class="icon">🇰🇷</span>
+                    <span>한국어</span>
+                </a>
+            </div>
+
+            <div class="mobile-books-grid" id="mobileBooksGrid">
+                <!-- Mobile books will be dynamically loaded here -->
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Features -->
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">왜 이도인가요?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🌍</div>
-                    <h3>다국어 지원</h3>
-                    <p>한국어, 영어, 일본어, 스페인어로 우리 문학을 전 세계에</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>모바일 최적화</h3>
-                    <p>언제 어디서나 편안하게 읽을 수 있는 반응형 디자인</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🆓</div>
-                    <h3>완전 무료</h3>
-                    <p>회원가입 없이 모든 콘텐츠를 자유롭게 이용하세요</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💡</div>
-                    <h3>직관적 인터페이스</h3>
-                    <p>깔끔하고 사용하기 쉬운 현대적 디자인</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="window.location.href='admin-test.html'" title="새 도서 추가">+</button>
 
-    <!-- Books Section -->
-    <section class="books" id="books">
-        <div class="container">
-            <h2 class="section-title">대표 작품</h2>
-            <div class="books-grid">
-                <div class="book-card">
-                    <div class="book-emoji">🌸</div>
-                    <h3>춘향전</h3>
-                    <p class="book-author">작자 미상</p>
-                    <p class="book-description">사랑과 의리가 만나는 조선시대 최고의 로맨스</p>
-                    <div class="book-languages">
-                        <button class="lang-button" onclick="readBook('chunhyang')">📖 읽기</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日本語</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
-                    </div>
-                </div>
-
-                <div class="book-card">
-                    <div class="book-emoji">🌊</div>
-                    <h3>심청전</h3>
-                    <p class="book-author">작자 미상</p>
-                    <p class="book-description">효심으로 가득한 딸의 감동적인 희생과 사랑</p>
-                    <div class="book-languages">
-                        <button class="lang-button" onclick="readBook('simcheong')">📖 읽기</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日본語</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
-                    </div>
-                </div>
-
-                <div class="book-card">
-                    <div class="book-emoji">🏠</div>
-                    <h3>흥부전</h3>
-                    <p class="book-author">작자 미상</p>
-                    <p class="book-description">착함과 욕심의 대비로 보는 인생의 교훈</p>
-                    <div class="book-languages">
-                        <button class="lang-button" onclick="readBook('heungbu')">📖 읽기</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇺🇸 English</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇯🇵 日본語</button>
-                        <button class="lang-button" onclick="showComingSoon()">🇪🇸 Español</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Statistics -->
-    <section class="stats">
-        <div class="container">
-            <h2 class="section-title" style="color: white;">함께하는 사람들</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h4>10,000+</h4>
-                    <p>독자</p>
-                </div>
-                <div class="stat-item">
-                    <h4>4</h4>
-                    <p>언어</p>
-                </div>
-                <div class="stat-item">
-                    <h4>6</h4>
-                    <p>작품</p>
-                </div>
-                <div class="stat-item">
-                    <h4>100%</h4>
-                    <p>무료</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer" id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>이도</h4>
-                    <p>한국 고전문학을 세계와 공유하는<br>디지털 문학 공간입니다.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>서비스</h4>
-                    <p><a href="books.html">전자책 서비스</a></p>
-                    <p><a href="#" onclick="showComingSoon()">작가 소개</a></p>
-                    <p><a href="#" onclick="showComingSoon()">문학 해설</a></p>
-                </div>
-                <div class="footer-section">
-                    <h4>정보</h4>
-                    <p><a href="#" onclick="showComingSoon()">이용약관</a></p>
-                    <p><a href="#" onclick="showComingSoon()">개인정보처리방침</a></p>
-                    <p><a href="#contact" onclick="showContact()">문의하기</a></p>
-                </div>
-                <div class="footer-section">
-                    <h4>연락처</h4>
-                    <p>이메일: contact@idopress.com</p>
-                    <p>전화: 02-1234-5678</p>
-                    <p>주소: 서울시 중구 세종대로 110</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 이도. 모든 권리 보유.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="scripts.js"></script>
     <script>
-        function readBook(bookId) {
-            // 이북 리더로 이동
-            const bookUrls = {
-                'chunhyang': 'read-chunhyang.html',
-                'simcheong': 'read-simcheong.html', 
-                'heungbu': 'read-heungbu.html'
-            };
+        // Global variables
+        let allBooks = [];
+        let filteredBooks = [];
+        let isMobile = false;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            detectDevice();
+            loadBooks();
+            setupEventListeners();
+        });
+
+        function detectDevice() {
+            isMobile = window.innerWidth <= 768;
+            updateViewBasedOnDevice();
+        }
+
+        function updateViewBasedOnDevice() {
+            const desktopView = document.getElementById('desktopView');
+            const mobileView = document.getElementById('mobileView');
             
-            if (bookUrls[bookId]) {
-                // 모든 책이 준비됨 (샘플 컨텐츠)
-                window.location.href = bookUrls[bookId];
+            if (isMobile) {
+                desktopView.style.display = 'none';
+                mobileView.style.display = 'block';
             } else {
-                alert(`📚 "${getBookName(bookId)}" 서비스는 곧 제공될 예정입니다!`);
+                desktopView.style.display = 'flex';
+                mobileView.style.display = 'none';
             }
         }
-        
-        function getBookName(bookId) {
-            const names = {
-                'chunhyang': '춘향전',
-                'simcheong': '심청전',
-                'heungbu': '흥부전'
-            };
-            return names[bookId] || bookId;
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            detectDevice();
+            renderBooks();
+        });
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchBooks(e.target.value);
+            });
+
+            // Enter key for search
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBooks(e.target.value);
+                }
+            });
         }
+
+        // Load books from localStorage and default books
+        function loadBooks() {
+            showLoading();
+            
+            // Default books (matching GitHub file structure)
+            const defaultBooks = [
+                {
+                    id: 'chunhyang',
+                    title: '춘향전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🌸',
+                    description: '사랑과 의리가 만나는 조선시대 최고의 로맨스',
+                    url: 'read-chunhyang.html'
+                },
+                {
+                    id: 'chunhyang-pro',
+                    title: '춘향전 (고급판)',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🌸',
+                    description: '춘향전의 향상된 버전',
+                    url: 'read-chunhyang-pro.html'
+                },
+                {
+                    id: 'simcheong',
+                    title: '심청전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🌊',
+                    description: '효심으로 가득한 딸의 감동적인 희생과 사랑',
+                    url: 'read-simcheong.html'
+                },
+                {
+                    id: 'heungbu',
+                    title: '흥부전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-20',
+                    emoji: '🏠',
+                    description: '착함과 욕심의 대비로 보는 인생의 교훈',
+                    url: 'read-heungbu.html'
+                },
+                {
+                    id: 'jusaeng',
+                    title: '주생전',
+                    author: '작자 미상',
+                    category: 'classical',
+                    languages: ['korean', 'english', 'japanese', 'spanish'],
+                    progress: 0,
+                    dateAdded: '2024-08-25',
+                    emoji: '💕',
+                    description: '조선시대 기생과 선비의 애절한 사랑 이야기',
+                    url: 'read-jusaeng.html'
+                },
+                {
+                    id: 'reader-natural',
+                    title: '자연스러운 리더기',
+                    author: '이도 시스템',
+                    category: 'system',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-26',
+                    emoji: '📖',
+                    description: '자연스러운 페이지 넘김 애니메이션을 지원하는 현대적 전자책 리더',
+                    url: 'reader-natural.html'
+                },
+                {
+                    id: 'reader-mobile',
+                    title: '모바일 리더기',
+                    author: '이도 시스템',
+                    category: 'system',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-25',
+                    emoji: '📱',
+                    description: '모바일 최적화된 스와이프 기반 전자책 리더',
+                    url: 'reader-mobile.html'
+                },
+                {
+                    id: 'reader-universal',
+                    title: '범용 리더기',
+                    author: '이도 시스템',
+                    category: 'system',
+                    languages: ['korean'],
+                    progress: 0,
+                    dateAdded: '2024-08-24',
+                    emoji: '🌐',
+                    description: '모든 기기에서 사용 가능한 범용 전자책 리더',
+                    url: 'reader-universal.html'
+                }
+            ];
+
+            // Load uploaded books from localStorage
+            const uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+            
+            // Combine all books
+            allBooks = [...defaultBooks, ...uploadedBooks];
+            filteredBooks = [...allBooks];
+            
+            renderBooks();
+            hideLoading();
+        }
+
+        // Render books based on device
+        function renderBooks() {
+            if (isMobile) {
+                renderMobileBooks();
+            } else {
+                renderDesktopBooks();
+            }
+        }
+
+        // Render books in desktop table format
+        function renderDesktopBooks() {
+            const tbody = document.getElementById('bookTableBody');
+            tbody.innerHTML = '';
+
+            filteredBooks.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="book-cover">${book.emoji || '📖'}</div>
+                    </td>
+                    <td>
+                        <div class="book-info">
+                            <div class="book-title" onclick="readBook('${book.id}')">${book.title}</div>
+                            <div class="book-author">${book.author}</div>
+                            <div class="book-description">${book.description || ''}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="book-category">${getCategoryName(book.category)}</span>
+                    </td>
+                    <td>
+                        <div class="language-tags">
+                            ${book.languages.map(lang => `<span class="lang-tag">${getLanguageFlag(lang)}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>${formatDate(book.dateAdded)}</td>
+                    <td>
+                        <a href="#" class="action-btn primary" onclick="readBook('${book.id}')">읽기</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Render books in mobile card format
+        function renderMobileBooks() {
+            const container = document.getElementById('mobileBooksGrid');
+            container.innerHTML = '';
+
+            filteredBooks.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'mobile-book-card';
+                card.innerHTML = `
+                    <div class="mobile-book-header">
+                        <div class="mobile-book-emoji">${book.emoji || '📖'}</div>
+                        <div class="mobile-book-info">
+                            <h3>${book.title}</h3>
+                            <p>${book.author}</p>
+                        </div>
+                    </div>
+                    <div class="mobile-book-description">${book.description || ''}</div>
+                    <div class="mobile-book-actions">
+                        <button class="mobile-read-btn" onclick="readBook('${book.id}')">📖 읽기</button>
+                        ${book.languages.length > 1 ? `<button class="mobile-lang-btn" title="다국어 지원">${getLanguageFlag(book.languages[1]) || '🌐'}</button>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Helper functions
+        function getCategoryName(category) {
+            const names = {
+                'classical': '고전문학',
+                'novel': '소설',
+                'poetry': '시가',
+                'history': '역사',
+                'system': '시스템',
+                'modern': '현대문학'
+            };
+            return names[category] || category;
+        }
+
+        function getLanguageFlag(lang) {
+            const flags = {
+                'korean': '🇰🇷',
+                'english': '🇺🇸',
+                'japanese': '🇯🇵',
+                'spanish': '🇪🇸'
+            };
+            return flags[lang] || '🌐';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR');
+        }
+
+        // Book reading function
+        function readBook(bookId) {
+            const book = allBooks.find(b => b.id === bookId);
+            if (!book) {
+                alert('책을 찾을 수 없습니다.');
+                return;
+            }
+
+            // Check if it's an uploaded book
+            const uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+            const uploadedBook = uploadedBooks.find(b => b.id === bookId);
+            
+            if (uploadedBook) {
+                // For uploaded books, use reader-natural.html
+                window.location.href = `reader-natural.html?book=${bookId}&lang=korean`;
+            } else {
+                // For default books, use their specific URLs or reader-natural as fallback
+                if (book.url) {
+                    window.location.href = book.url;
+                } else {
+                    window.location.href = 'reader-natural.html';
+                }
+            }
+        }
+
+        // Search functionality
+        function searchBooks(query = '') {
+            const searchTerm = query || document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                filteredBooks = [...allBooks];
+            } else {
+                filteredBooks = allBooks.filter(book => 
+                    book.title.toLowerCase().includes(searchTerm) ||
+                    book.author.toLowerCase().includes(searchTerm) ||
+                    (book.description && book.description.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderBooks();
+        }
+
+        // Filter functions
+        function filterBooks(category) {
+            if (category === 'all') {
+                filteredBooks = [...allBooks];
+            } else {
+                filteredBooks = allBooks.filter(book => book.category === category);
+            }
+            
+            renderBooks();
+            updateActiveMenu();
+        }
+
+        function filterByLanguage(language) {
+            filteredBooks = allBooks.filter(book => 
+                book.languages && book.languages.includes(language)
+            );
+            
+            renderBooks();
+        }
+
+        // Show/hide sections
+        function showSection(section) {
+            // Update active menu
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(section) {
+                case 'recent':
+                    // Show recently accessed books (last 5 for demo)
+                    filteredBooks = allBooks.slice(-5).reverse();
+                    break;
+                case 'favorites':
+                    // Show favorited books
+                    filteredBooks = allBooks.filter(book => book.favorite);
+                    break;
+                case 'reading':
+                    // Show books currently being read
+                    filteredBooks = allBooks.filter(book => book.progress > 0 && book.progress < 100);
+                    break;
+                case 'completed':
+                    // Show completed books
+                    filteredBooks = allBooks.filter(book => book.progress >= 100);
+                    break;
+                default:
+                    filteredBooks = [...allBooks];
+            }
+            
+            renderBooks();
+        }
+
+        function updateActiveMenu() {
+            // Update active menu items based on current filter
+        }
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.remove('active');
+        }
+
+        // Loading states
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileNav = document.getElementById('mobileNav');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (mobileNav && mobileMenuBtn && !mobileNav.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                mobileNav.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>

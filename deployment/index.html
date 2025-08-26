@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDO Press - 한국 고전문학 전자책 플랫폼</title>
+    <meta name="description" content="4개국어로 번역된 한국 고전문학을 무료 전자책으로 만나보세요">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+</head>
+<body class="bg-white">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <a href="/" class="flex items-center">
+                        <img 
+                            src="https://static.readdy.ai/image/63ba1a01cd161ffba8fdd22870371af3/13d24f89cbd76d525f4c7672a0e1c159.png"
+                            alt="이도출판 로고"
+                            class="h-8 w-auto"
+                        />
+                    </a>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#books" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">도서</a>
+                    <a href="#authors" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">작가</a>
+                    <a href="#community" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">커뮤니티</a>
+                    <a href="#about" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">회사소개</a>
+                    <button class="bg-gray-900 text-white px-4 py-2 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                        관리자
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 히어로 섹션 -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                한국문학의 향기,<br>디지털로 피어나다
+            </h1>
+            <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+                천년의 문학 전통이 당신의 손끝에서 새롭게 살아납니다
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                <a href="#books" class="bg-gray-900 text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                    도서 읽기
+                </a>
+            </div>
+
+            <!-- 언어 지원 -->
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="flex items-center gap-2 text-gray-600">
+                    <span class="text-2xl">🇰🇷</span>
+                    <span class="text-sm font-medium">한국어</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                    <span class="text-2xl">🇺🇸</span>
+                    <span class="text-sm font-medium">English</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                    <span class="text-2xl">🇯🇵</span>
+                    <span class="text-sm font-medium">日本語</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                    <span class="text-2xl">🇪🇸</span>
+                    <span class="text-sm font-medium">Español</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 특징 섹션 -->
+    <section class="py-20 bg-gray-50" id="features">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-global-line text-xl text-gray-700"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">4개 언어 지원</h3>
+                    <p class="text-gray-600 text-sm">한국어, 영어, 일본어, 스페인어로 읽을 수 있어요</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-smartphone-line text-xl text-gray-700"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">모바일 최적화</h3>
+                    <p class="text-gray-600 text-sm">언제 어디서나 편리하게 읽으세요</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-book-open-line text-xl text-gray-700"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">무료 이용</h3>
+                    <p class="text-gray-600 text-sm">회원가입 없이 모든 도서를 무료로</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-heart-line text-xl text-gray-700"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">사용자 친화적</h3>
+                    <p class="text-gray-600 text-sm">직관적이고 아름다운 인터페이스</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 도서 소개 섹션 -->
+    <section class="py-20 bg-white" id="books">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">마음을 울리는 한국문학 여행</h2>
+                <p class="text-xl text-gray-600">고전부터 현대까지, 엄선된 한국문학의 깊이를 경험하세요</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 춘향전 -->
+                <div class="border rounded-2xl p-8 hover:shadow-lg transition-shadow bg-rose-50 border-rose-200">
+                    <div class="text-center">
+                        <span class="text-5xl mb-4 block">🌸</span>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">춘향전</h3>
+                        <p class="text-gray-600 mb-4">작자 미상</p>
+                        <p class="text-gray-700 text-sm mb-6">춘향과 몽룡의 애절한 사랑 이야기</p>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇰🇷</span>
+                                <span>한국어</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇺🇸</span>
+                                <span>English</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇯🇵</span>
+                                <span>日本語</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇪🇸</span>
+                                <span>Español</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 심청전 -->
+                <div class="border rounded-2xl p-8 hover:shadow-lg transition-shadow bg-blue-50 border-blue-200">
+                    <div class="text-center">
+                        <span class="text-5xl mb-4 block">🌊</span>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">심청전</h3>
+                        <p class="text-gray-600 mb-4">작자 미상</p>
+                        <p class="text-gray-700 text-sm mb-6">효녀 심청의 감동적인 이야기</p>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇰🇷</span>
+                                <span>한국어</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇺🇸</span>
+                                <span>English</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇯🇵</span>
+                                <span>日本語</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇪🇸</span>
+                                <span>Español</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 흥부전 -->
+                <div class="border rounded-2xl p-8 hover:shadow-lg transition-shadow bg-amber-50 border-amber-200">
+                    <div class="text-center">
+                        <span class="text-5xl mb-4 block">🏠</span>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">흥부전</h3>
+                        <p class="text-gray-600 mb-4">작자 미상</p>
+                        <p class="text-gray-700 text-sm mb-6">흥부와 놀부의 권선징악 이야기</p>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇰🇷</span>
+                                <span>한국어</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇺🇸</span>
+                                <span>English</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇯🇵</span>
+                                <span>日本語</span>
+                            </a>
+                            <a href="javascript:alert('개발 중입니다. 곧 서비스 예정입니다!')" class="bg-white border border-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors flex items-center justify-center gap-1">
+                                <span class="text-base">🇪🇸</span>
+                                <span>Español</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 통계 섹션 -->
+    <section class="py-20 bg-gray-900 text-white">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-4">전 세계가 사랑하는 한국 고전문학</h2>
+            <p class="text-xl text-gray-300 mb-12">이미 많은 사람들이 이도와 함께하고 있습니다</p>
+
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-2">50,000+</div>
+                    <div class="text-gray-400">총 독자 수</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-2">4</div>
+                    <div class="text-gray-400">지원 언어</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-2">6</div>
+                    <div class="text-gray-400">출간 작품</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-2">98%</div>
+                    <div class="text-gray-400">만족도</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section class="py-20 bg-white" id="about">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">지금 바로 시작하세요</h2>
+            <p class="text-xl text-gray-600 mb-8">회원가입 없이 바로 이용 가능합니다.<br>아름다운 우리 문학의 세계로 떠나보세요.</p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#books" class="bg-gray-900 text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                    무료로읽기시작
+                </a>
+                <a href="#community" class="border border-gray-300 text-gray-700 px-8 py-3 rounded-full font-medium hover:border-gray-400 transition-colors">
+                    커뮤니티 참여
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-50 border-t border-gray-100" id="community">
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="font-['Pacifico'] text-2xl text-gray-900 mb-4">이도</div>
+                    <p class="text-gray-600 mb-6 max-w-md">
+                        한국 고전문학을 세계에 전하는 디지털 도서관.<br>천년의 문학 전통이 당신의 손끝에서 새롭게 살아납니다
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">서비스</h4>
+                    <div class="space-y-2">
+                        <a href="#books" class="block text-gray-600 hover:text-gray-900 transition-colors">도서 목록</a>
+                        <a href="#authors" class="block text-gray-600 hover:text-gray-900 transition-colors">작가소개</a>
+                        <a href="#community" class="block text-gray-600 hover:text-gray-900 transition-colors">커뮤니티</a>
+                        <a href="javascript:alert('개발 중입니다!')" class="block text-gray-600 hover:text-gray-900 transition-colors">관리자</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">회사</h4>
+                    <div class="space-y-2">
+                        <a href="#about" class="block text-gray-600 hover:text-gray-900 transition-colors">회사소개</a>
+                        <button class="block text-gray-600 hover:text-gray-900 transition-colors text-left">문의하기</button>
+                        <a href="javascript:alert('준비 중입니다!')" class="block text-gray-600 hover:text-gray-900 transition-colors text-left">개인정보처리방침</a>
+                        <a href="javascript:alert('준비 중입니다!')" class="block text-gray-600 hover:text-gray-900 transition-colors text-left">이용약관</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 mt-12 pt-8 text-center">
+                <p class="text-gray-500">2024 이도. 한국 고전문학을 세계에 전하다. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 부드러운 스크롤
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

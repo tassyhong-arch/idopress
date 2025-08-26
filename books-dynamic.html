@@ -238,8 +238,8 @@
         
         // 테스트 도서 읽기
         function readTestBook(bookId, language) {
-            // 범용 리더기로 이동 (URL 파라미터로 도서 ID와 언어 전달)
-            window.location.href = `reader-universal.html?book=${bookId}&lang=${language}`;
+            // 모바일 최적화 리더기로 이동 (URL 파라미터로 도서 ID와 언어 전달)
+            window.location.href = `reader-mobile.html?book=${bookId}&lang=${language}`;
         }
         
         // 테스트 도서 삭제

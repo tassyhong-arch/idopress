@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>춘향전 - 이도</title>
+    <meta name="description" content="춘향전 전문을 읽어보세요">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 이북 리더 전용 스타일 */
+        .ebook-reader {
+            background: #fff;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .ebook-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .ebook-controls {
+            background: #f8fafc;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 80px;
+            z-index: 50;
+        }
+
+        .controls-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: #fff;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .font-size-slider {
+            width: 120px;
+        }
+
+        .chapter-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ebook-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+            line-height: 1.8;
+        }
+
+        .chapter {
+            margin-bottom: 3rem;
+            display: none;
+        }
+
+        .chapter.active {
+            display: block;
+        }
+
+        .chapter-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2563eb;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .chapter-content p {
+            margin-bottom: 1.5rem;
+            text-indent: 1em;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            height: 3px;
+            background: #2563eb;
+            transition: width 0.3s;
+            z-index: 60;
+        }
+
+        .reading-stats {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* 다크 테마 */
+        .ebook-reader.dark-theme {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .dark-theme .ebook-content {
+            color: #e2e8f0;
+        }
+
+        .dark-theme .chapter-title {
+            color: #60a5fa;
+        }
+
+        .dark-theme .ebook-controls {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-theme .control-btn {
+            background: #4a5568;
+            color: #e2e8f0;
+            border-color: #6b7280;
+        }
+
+        .dark-theme .reading-stats {
+            background: #2d3748;
+            color: #a0aec0;
+        }
+
+        @media (max-width: 768px) {
+            .controls-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .ebook-content {
+                padding: 1rem 15px;
+            }
+
+            .chapter-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index-simple.html" class="logo">이도</a>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="books.html" onclick="closeMobileMenu()">도서</a></li>
+                    <li><a href="about.html" onclick="closeMobileMenu()">소개</a></li>
+                    <li><a href="#contact" onclick="closeMobileMenu()">문의</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 진행률 바 -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- 이북 리더 -->
+    <div class="ebook-reader" id="ebookReader">
+        <!-- 이북 헤더 -->
+        <div class="ebook-header">
+            <div class="container">
+                <h1>춘향전 🌸</h1>
+                <p>작자 미상 • 조선시대 판소리계 소설</p>
+            </div>
+        </div>
+
+        <!-- 이북 컨트롤 -->
+        <div class="ebook-controls">
+            <div class="controls-container">
+                <div class="control-group">
+                    <button class="control-btn" onclick="toggleTheme()">🌙 다크모드</button>
+                    <span style="font-size: 0.9rem;">글자 크기:</span>
+                    <input type="range" min="0.8" max="1.5" step="0.1" value="1.1" 
+                           class="font-size-slider" onchange="changeFontSize(this.value)">
+                </div>
+                
+                <div class="chapter-nav">
+                    <button class="control-btn" onclick="previousChapter()">← 이전</button>
+                    <span id="chapterIndicator">1 / 5</span>
+                    <button class="control-btn" onclick="nextChapter()">다음 →</button>
+                </div>
+                
+                <div class="control-group">
+                    <button class="control-btn" onclick="goToBooks()">📚 도서 목록</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 이북 내용 -->
+        <div class="ebook-content" id="ebookContent">
+            
+            <!-- 제1장 -->
+            <div class="chapter active" id="chapter1">
+                <h2 class="chapter-title">제1장 - 춘향의 탄생과 성장</h2>
+                <div class="chapter-content">
+                    <p>옛날 전라도 남원에 월매라는 기생이 살고 있었습니다. 월매는 아름다운 용모와 뛰어난 예능으로 널리 이름이 알려진 기생이었습니다.</p>
+                    
+                    <p>월매에게는 춘향이라는 딸이 있었는데, 춘향은 어머니보다 더욱 아름답고 똑똑한 처녀로 자라났습니다. 춘향의 미모는 달빛 같이 은은하고, 마음씨는 봄꽃처럼 따뜻했습니다.</p>
+                    
+                    <p>춘향은 비록 기생의 딸이었지만, 어려서부터 글을 읽고 바느질을 배우며 양반 규수 못지않게 교양을 쌓았습니다. 특히 시와 그림에 뛰어난 재능을 보였고, 거문고와 가야금 연주에도 능했습니다.</p>
+                    
+                    <p>어느 날 춘향은 어머니 월매와 함께 광한루에 올라 달구경을 하고 있었습니다. 광한루는 남원에서 가장 아름다운 누각으로, 많은 시인묵객들이 찾아와 시를 짓고 풍류를 즐기는 곳이었습니다.</p>
+                </div>
+            </div>
+
+            <!-- 제2장 -->
+            <div class="chapter" id="chapter2">
+                <h2 class="chapter-title">제2장 - 몽룡과의 만남</h2>
+                <div class="chapter-content">
+                    <p>그때 남원부사의 아들 이몽룡이 서울에서 내려와 아버지를 뵈러 왔습니다. 몽룡은 열여섯 살의 준수한 청년으로, 글읽기를 좋아하고 마음이 착한 양반 도련님이었습니다.</p>
+                    
+                    <p>어느 단오날, 몽룡은 하인 방자와 함께 광한루에 나들이를 나왔습니다. 그네뛰기를 구경하던 몽룣은 우연히 춘향을 보게 되었습니다.</p>
+                    
+                    <p>"저 아가씨가 누구냐?" 몽룡이 방자에게 물었습니다. 방자는 "월매 기생의 딸 춘향이라고 합니다"라고 대답했습니다.</p>
+                    
+                    <p>몽룡은 춘향의 아름다운 모습에 한눈에 반했습니다. 춘향 또한 몽룡의 단정한 모습과 따뜻한 미소에 마음이 끌렸습니다. 두 사람은 서로를 바라보며 말없이 인사를 나누었습니다.</p>
+                    
+                    <p>그날 저녁, 몽룡은 춘향의 집을 찾아갔습니다. 월매는 부사의 아들이 찾아온 것을 알고 정중히 맞이했습니다. 몽룡과 춘향은 대화를 나누며 서로의 마음을 확인하게 되었습니다.</p>
+                </div>
+            </div>
+
+            <!-- 제3장 -->
+            <div class="chapter" id="chapter3">
+                <h2 class="chapter-title">제3장 - 사랑의 맹세</h2>
+                <div class="chapter-content">
+                    <p>"춘향아, 나와 함께 백년가약을 맺지 않겠느냐?" 몽룡이 진심을 담아 청혼했습니다.</p>
+                    
+                    <p>춘향은 얼굴을 붉히며 대답했습니다. "도련님, 저는 기생의 딸인 천한 몸입니다. 어찌 양반 도련님과 함께할 수 있겠습니까?"</p>
+                    
+                    <p>"춘향아, 사랑에 신분이 어디 있겠느냐. 내 마음은 이미 너에게 있고, 너 없이는 살 수 없다." 몽룡의 간절한 마음에 춘향도 감동했습니다.</p>
+                    
+                    <p>둘은 달빛 아래에서 백년가약을 맺었습니다. 하늘의 견우직녀처럼 영원한 사랑을 맹세했습니다. 춘향은 "도련님을 따르는 것이 제 소원입니다"라며 눈물을 흘렸습니다.</p>
+                    
+                    <p>그 후 두 사람은 매일 만나 사랑을 키워갔습니다. 몽룡은 춘향에게 시를 지어주고, 춘향은 몽룡을 위해 거문고를 탔습니다. 그들의 사랑은 날이 갈수록 더욱 깊어져 갔습니다.</p>
+                </div>
+            </div>
+
+            <!-- 제4장 -->
+            <div class="chapter" id="chapter4">
+                <h2 class="chapter-title">제4장 - 이별의 아픔</h2>
+                <div class="chapter-content">
+                    <p>행복한 나날이 지나고, 갑자기 몽룡의 아버지가 서울로 전근을 가게 되었습니다. 몽룡도 함께 서울로 올라가 과거 시험을 준비해야 했습니다.</p>
+                    
+                    <p>"춘향아, 내가 서울에 가서 과거에 급제한 후 너를 정식으로 맞이하겠다. 그때까지 나만을 믿고 기다려 다오." 몽룡이 춘향의 손을 잡으며 말했습니다.</p>
+                    
+                    <p>"도련님, 가시더라도 저를 잊지 마세요. 설사 십 년이 걸리더라도 도련님만을 기다리겠습니다." 춘향이 눈물을 흘리며 대답했습니다.</p>
+                    
+                    <p>이별의 밤, 두 사람은 마지막으로 광한루에서 만났습니다. 달빛 아래에서 서로의 사랑을 다시 한 번 확인하며, 재회를 약속했습니다.</p>
+                    
+                    <p>다음 날 아침, 몽룡은 춘향에게 마지막 인사를 하고 서울로 떠났습니다. 춘향은 멀어져 가는 몽룡의 뒷모습을 바라보며 하염없이 눈물을 흘렸습니다.</p>
+                </div>
+            </div>
+
+            <!-- 제5장 -->
+            <div class="chapter" id="chapter5">
+                <h2 class="chapter-title">제5장 - 시련과 재회</h2>
+                <div class="chapter-content">
+                    <p>몽룡이 떠난 후, 남원에 새로운 부사가 부임했습니다. 변학도라는 이 부사는 탐욕스럽고 포악한 인물이었습니다.</p>
+                    
+                    <p>변학도는 춘향의 미모에 반해 자신의 첩으로 삼으려 했습니다. 하지만 춘향은 "저에게는 이미 남편이 있습니다"라며 단호히 거절했습니다.</p>
+                    
+                    <p>분노한 변학도는 춘향을 옥에 가두고 갖은 고문을 가했습니다. 그러나 춘향은 "죽을지언정 몽룡 도련님에 대한 절개는 지키겠습니다"라며 굴복하지 않았습니다.</p>
+                    
+                    <p>그사이 서울에서 몽룡은 과거에 급제하여 암행어사가 되었습니다. 춘향의 소식을 들은 몽룡은 급히 남원으로 내려왔습니다.</p>
+                    
+                    <p>거지 차림으로 변장한 몽룡은 옥중의 춘향을 찾아갔습니다. 춘향은 초라한 몽룡의 모습을 보고 실망했지만, 곧 그의 진심을 알아보고 기뻐했습니다.</p>
+                    
+                    <p>마침내 몽룡은 암행어사의 신분을 밝히고 변학도를 처벌했습니다. 춘향은 옥에서 풀려나 몽룡과 재회의 기쁨을 나누었습니다. 두 사람은 정식으로 혼례를 올리고 행복하게 살았다고 합니다.</p>
+                </div>
+            </div>
+
+            <!-- 읽기 통계 -->
+            <div class="reading-stats">
+                <p>📖 읽기 시간: <span id="readingTime">0분</span> | 진행률: <span id="progressPercent">0%</span></p>
+                <p>🌸 춘향전을 끝까지 읽어주셔서 감사합니다!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>이도</h4>
+                    <p>한국 고전문학을 세계와 공유하는<br>디지털 문학 공간입니다.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>서비스</h4>
+                    <p><a href="books.html">전자책 서비스</a></p>
+                    <p><a href="#" onclick="showComingSoon()">작가 소개</a></p>
+                    <p><a href="#" onclick="showComingSoon()">문학 해설</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>정보</h4>
+                    <p><a href="#" onclick="showComingSoon()">이용약관</a></p>
+                    <p><a href="#" onclick="showComingSoon()">개인정보처리방침</a></p>
+                    <p><a href="#" onclick="showContact()">문의하기</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>연락처</h4>
+                    <p>이메일: contact@idopress.com</p>
+                    <p>전화: 02-1234-5678</p>
+                    <p>주소: 서울시 중구 세종대로 110</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 이도. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        // 이북 리더 전용 스크립트
+        let currentChapter = 1;
+        const totalChapters = 5;
+        let startTime = Date.now();
+        let isDarkTheme = false;
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateChapterIndicator();
+            
+            // 스크롤 이벤트로 진행률 업데이트
+            window.addEventListener('scroll', updateProgress);
+            
+            // 읽기 시간 업데이트
+            setInterval(updateReadingTime, 60000); // 1분마다 업데이트
+        });
+
+        // 다음 챕터
+        function nextChapter() {
+            if (currentChapter < totalChapters) {
+                document.getElementById(`chapter${currentChapter}`).classList.remove('active');
+                currentChapter++;
+                document.getElementById(`chapter${currentChapter}`).classList.add('active');
+                updateChapterIndicator();
+                scrollToTop();
+            }
+        }
+
+        // 이전 챕터
+        function previousChapter() {
+            if (currentChapter > 1) {
+                document.getElementById(`chapter${currentChapter}`).classList.remove('active');
+                currentChapter--;
+                document.getElementById(`chapter${currentChapter}`).classList.add('active');
+                updateChapterIndicator();
+                scrollToTop();
+            }
+        }
+
+        // 챕터 표시기 업데이트
+        function updateChapterIndicator() {
+            document.getElementById('chapterIndicator').textContent = `${currentChapter} / ${totalChapters}`;
+        }
+
+        // 맨 위로 스크롤
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 진행률 업데이트
+        function updateProgress() {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            
+            document.getElementById('progressBar').style.width = scrollPercent + '%';
+            document.getElementById('progressPercent').textContent = Math.round(scrollPercent) + '%';
+        }
+
+        // 글자 크기 변경
+        function changeFontSize(size) {
+            document.getElementById('ebookContent').style.fontSize = size + 'rem';
+        }
+
+        // 다크 테마 토글
+        function toggleTheme() {
+            const reader = document.getElementById('ebookReader');
+            isDarkTheme = !isDarkTheme;
+            
+            if (isDarkTheme) {
+                reader.classList.add('dark-theme');
+                event.target.textContent = '☀️ 밝은모드';
+            } else {
+                reader.classList.remove('dark-theme');
+                event.target.textContent = '🌙 다크모드';
+            }
+        }
+
+        // 읽기 시간 업데이트
+        function updateReadingTime() {
+            const elapsed = Math.round((Date.now() - startTime) / 60000);
+            document.getElementById('readingTime').textContent = elapsed + '분';
+        }
+
+        // 도서 목록으로 이동
+        function goToBooks() {
+            window.location.href = 'books.html';
+        }
+
+        // 키보드 단축키
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                previousChapter();
+            } else if (e.key === 'ArrowRight') {
+                nextChapter();
+            } else if (e.key === 'Escape') {
+                goToBooks();
+            }
+        });
+    </script>
+</body>
+</html>

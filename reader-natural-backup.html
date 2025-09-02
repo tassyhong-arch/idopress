@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자연스러운 리더기 - 이도</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        .reader-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .reader-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .book-title { font-size: 18px; font-weight: 600; }
+        .book-info { font-size: 14px; opacity: 0.8; margin-top: 2px; }
+        .reader-controls { display: flex; gap: 10px; }
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .control-btn:hover { background: rgba(255,255,255,0.3); }
+
+        .page-container {
+            position: relative;
+            perspective: 1000px;
+            height: calc(100vh - 120px);
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transform-origin: left center;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .page.current { transform: rotateY(0deg); z-index: 3; }
+        .page.next { transform: rotateY(-90deg); z-index: 2; }
+        .page.prev { transform: rotateY(90deg); z-index: 1; }
+
+        .page.flip-forward {
+            animation: pageFlip 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes pageFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(-90deg); }
+            100% { transform: rotateY(-180deg); }
+        }
+
+        .chapter-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chapter-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #444;
+            text-align: justify;
+        }
+
+        .chapter-content p {
+            margin-bottom: 20px;
+        }
+
+        .reader-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-info {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover { background: #0056b3; transform: translateY(-1px); }
+        .nav-btn:disabled { background: #6c757d; cursor: not-allowed; transform: none; }
+
+        @media (max-width: 768px) {
+            .page { padding: 20px; }
+            .chapter-title { font-size: 20px; }
+            .chapter-content { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="reader-container">
+        <div class="reader-header">
+            <div class="book-title" id="bookTitle">자연스러운 리더기</div>
+            <div class="reader-controls">
+                <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
+                <button class="control-btn" onclick="goHome()">🏠</button>
+            </div>
+        </div>
+
+        <div class="page-container" id="pageContainer">
+            <!-- Pages will be dynamically loaded here -->
+        </div>
+
+        <div class="reader-footer">
+            <div class="page-info">
+                <span id="currentPage">1</span> / <span id="totalPages">1</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" onclick="prevPage()">← 이전</button>
+                <button class="nav-btn" id="nextBtn" onclick="nextPage()">다음 →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPageIndex = 0;
+        let bookData = null;
+
+        // Sample book content
+        const sampleBook = {
+            title: "자연스러운 리더기 사용법",
+            chapters: [
+                {
+                    title: "환영합니다",
+                    content: `
+                        <p>이도 디지털 도서관의 자연스러운 리더기에 오신 것을 환영합니다.</p>
+                        <p>이 리더기는 실제 책을 넘기는 것과 같은 자연스러운 페이지 넘김 효과를 제공합니다.</p>
+                        <p>왼쪽과 오른쪽 화살표 키를 사용하거나 하단의 버튼을 클릭하여 페이지를 넘길 수 있습니다.</p>
+                    `
+                },
+                {
+                    title: "기능 안내",
+                    content: `
+                        <p><strong>📖 자연스러운 페이지 넘김:</strong> CSS 3D 변환을 사용한 실감나는 페이지 넘김 애니메이션</p>
+                        <p><strong>⌨️ 키보드 지원:</strong> 좌우 화살표 키로 페이지 이동</p>
+                        <p><strong>📱 모바일 최적화:</strong> 터치 제스처 지원</p>
+                        <p><strong>🔧 관리자 연동:</strong> 업로드된 도서 자동 로딩</p>
+                    `
+                },
+                {
+                    title: "사용법",
+                    content: `
+                        <p>1. 관리자 페이지에서 도서를 업로드하세요</p>
+                        <p>2. 메인 페이지에서 도서를 선택하세요</p>
+                        <p>3. 자동으로 이 리더기가 열립니다</p>
+                        <p>4. 키보드나 버튼으로 페이지를 넘기며 읽으세요</p>
+                    `
+                }
+            ]
+        };
+
+        // Initialize reader
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBook();
+            setupKeyboardControls();
+        });
+
+        function loadBook() {
+            // Check if book is passed via localStorage (from books-dynamic.html)
+            const currentBook = localStorage.getItem('currentBook');
+            if (currentBook) {
+                try {
+                    const book = JSON.parse(currentBook);
+                    loadBookFromData(book);
+                    localStorage.removeItem('currentBook'); // Clean up
+                    return;
+                } catch (e) {
+                    console.log('Failed to parse currentBook from localStorage');
+                }
+            }
+            
+            // Get book ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('book');
+            
+            if (bookId) {
+                loadBookById(bookId);
+            } else {
+                loadSampleBook();
+            }
+        }
+
+        function loadBookFromData(book) {
+            bookData = {
+                title: book.title,
+                author: book.author,
+                chapters: book.chapters || parseContentIntoChapters(book.content || book.koreanContent || '내용이 없습니다.')
+            };
+            renderBook();
+        }
+
+        function loadBookById(bookId) {
+            // Try to load from uploaded books
+            const uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+            const book = uploadedBooks.find(b => b.id === bookId);
+            
+            if (book) {
+                loadBookFromData(book);
+            } else {
+                // Fallback to sample
+                loadSampleBook();
+            }
+        }
+
+        function loadSampleBook() {
+            bookData = sampleBook;
+            renderBook();
+        }
+
+        function parseContentIntoChapters(content) {
+            if (!content || content.trim() === '') {
+                return [{
+                    title: '내용 없음',
+                    content: '<p>이 도서는 아직 내용이 입력되지 않았습니다.</p><p>관리자 페이지에서 내용을 추가해주세요.</p>'
+                }];
+            }
+            
+            // ⭐ 더 큰 챕터 유지 (5000자까지)
+            const maxChapterLength = 5000;
+            
+            // Split by triple line breaks first
+            let chapters = content.split(/\n\s*\n\s*\n/).filter(chapter => chapter.trim());
+            
+            // If still one big chapter, split by double line breaks
+            if (chapters.length === 1 && chapters[0].length > maxChapterLength) {
+                chapters = content.split(/\n\s*\n/).filter(chapter => chapter.trim());
+            }
+            
+            // If still too big, split into reasonable reading chunks
+            if (chapters.length === 1 && chapters[0].length > maxChapterLength) {
+                const longContent = chapters[0];
+                chapters = [];
+                
+                // Split by paragraphs and group them
+                const paragraphs = longContent.split(/\n/).filter(p => p.trim());
+                let currentChapter = '';
+                
+                paragraphs.forEach(paragraph => {
+                    if (currentChapter.length + paragraph.length > maxChapterLength && currentChapter) {
+                        chapters.push(currentChapter);
+                        currentChapter = paragraph;
+                    } else {
+                        currentChapter += (currentChapter ? '\n\n' : '') + paragraph;
+                    }
+                });
+                
+                if (currentChapter) {
+                    chapters.push(currentChapter);
+                }
+            }
+            
+            return chapters.map((chapter, index) => ({
+                title: `${index + 1}장`,
+                content: `<p>${chapter.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>')}</p>`
+            }));
+        }
+
+        function renderBook() {
+            document.getElementById('bookTitle').innerHTML = `
+                ${bookData.title}
+                ${bookData.author ? `<div class="book-info">by ${bookData.author}</div>` : ''}
+            `;
+            document.getElementById('totalPages').textContent = bookData.chapters.length;
+            
+            const container = document.getElementById('pageContainer');
+            container.innerHTML = '';
+            
+            bookData.chapters.forEach((chapter, index) => {
+                const page = document.createElement('div');
+                page.className = `page ${index === 0 ? 'current' : 'next'}`;
+                page.innerHTML = `
+                    <div class="chapter-title">${chapter.title}</div>
+                    <div class="chapter-content">${chapter.content}</div>
+                `;
+                container.appendChild(page);
+            });
+            
+            updateNavigationButtons();
+        }
+
+        function nextPage() {
+            if (currentPageIndex < bookData.chapters.length - 1) {
+                const currentPage = document.querySelectorAll('.page')[currentPageIndex];
+                const nextPage = document.querySelectorAll('.page')[currentPageIndex + 1];
+                
+                currentPage.classList.add('flip-forward');
+                currentPage.classList.remove('current');
+                currentPage.classList.add('prev');
+                
+                nextPage.classList.remove('next');
+                nextPage.classList.add('current');
+                
+                currentPageIndex++;
+                updatePageInfo();
+                updateNavigationButtons();
+                
+                setTimeout(() => {
+                    currentPage.classList.remove('flip-forward');
+                }, 600);
+            }
+        }
+
+        function prevPage() {
+            if (currentPageIndex > 0) {
+                const currentPage = document.querySelectorAll('.page')[currentPageIndex];
+                const prevPage = document.querySelectorAll('.page')[currentPageIndex - 1];
+                
+                currentPage.classList.remove('current');
+                currentPage.classList.add('next');
+                
+                prevPage.classList.remove('prev');
+                prevPage.classList.add('current');
+                
+                currentPageIndex--;
+                updatePageInfo();
+                updateNavigationButtons();
+            }
+        }
+
+        function updatePageInfo() {
+            document.getElementById('currentPage').textContent = currentPageIndex + 1;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentPageIndex === 0;
+            nextBtn.disabled = currentPageIndex === bookData.chapters.length - 1;
+        }
+
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    prevPage();
+                } else if (e.key === 'ArrowRight') {
+                    nextPage();
+                }
+            });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

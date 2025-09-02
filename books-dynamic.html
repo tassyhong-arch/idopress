@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이도 - 전체 도서 목록</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .books-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .books-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .book-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-read {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .btn-read:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .btn-edit:hover {
+            background: #d97706;
+        }
+        
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .btn-delete:hover {
+            background: #b91c1c;
+        }
+        
+        .book-type {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-type.uploaded {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .search-box {
+            margin-bottom: 2rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .books-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .books-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .book-actions {
+                justify-content: center;
+            }
+            
+            .search-input {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">📚 이도</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 홈</a></li>
+                    <li><a href="books.html">📖 기본도서</a></li>
+                    <li><a href="books-dynamic.html" class="active">🔍 전체도서</a></li>
+                    <li><a href="admin-test.html">⬆️ 업로드</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="books-section">
+                <div class="books-header">
+                    <h2>📚 전체 도서 목록</h2>
+                    <div class="books-stats">
+                        <div class="stat-item">
+                            <strong id="totalCount">0</strong> 전체 도서
+                        </div>
+                        <div class="stat-item">
+                            <strong id="uploadedCount">0</strong> 업로드 도서
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" 
+                           class="search-input" 
+                           id="searchInput" 
+                           placeholder="📖 도서명이나 작가명으로 검색..." 
+                           autocomplete="off">
+                </div>
+                
+                <div class="books-grid" id="allBooksGrid">
+                    <!-- Books will be dynamically loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+
+
+    <script>
+        let allBooksData = [];
+        let currentEditingId = null;
+
+        // Default books with proper IDs and URLs (updated to use improved reader)
+        const defaultBooks = [
+            {
+                id: 'chunhyang',
+                title: '춘향전',
+                author: '작자 미상',
+                emoji: '🌸',
+                description: '사랑과 의리가 만나는 조선시대 최고의 로맨스',
+                url: 'read-chunhyang-improved.html',
+                type: 'default'
+            },
+            {
+                id: 'simcheong',
+                title: '심청전',
+                author: '작자 미상', 
+                emoji: '🌊',
+                description: '효심으로 가득한 딸의 감동적인 희생과 사랑',
+                url: 'read-simcheong-improved.html',
+                type: 'default'
+            },
+            {
+                id: 'heungbu',
+                title: '흥부전',
+                author: '작자 미상',
+                emoji: '🏠', 
+                description: '착함과 욕심의 대비로 보는 인생의 교훈',
+                url: 'read-heungbu-improved.html',
+                type: 'default'
+            }
+        ];
+
+        // Load all books (default + uploaded)
+        function loadAllBooks() {
+            try {
+                const uploadedBooksRaw = localStorage.getItem('uploadedBooks');
+                console.log('Raw localStorage data:', uploadedBooksRaw); // Debug log
+                
+                const uploadedBooks = JSON.parse(uploadedBooksRaw || '[]');
+                console.log('Parsed uploaded books:', uploadedBooks); // Debug log
+                
+                // Add type and ensure proper IDs for uploaded books
+                const processedUploadedBooks = uploadedBooks.map((book, index) => {
+                    // Ensure book has required properties
+                    return {
+                        id: book.id || `uploaded_${Date.now()}_${index}`,
+                        title: book.title || '제목 없음',
+                        author: book.author || '작가 미상',
+                        emoji: book.emoji || '📖',
+                        description: book.description || '설명이 없습니다.',
+                        content: book.content || '',
+                        url: book.url || null,
+                        type: 'uploaded',
+                        multilingual: book.multilingual || false,
+                        languages: book.languages || [],
+                        // Preserve any additional properties
+                        ...book
+                    };
+                });
+                
+                console.log('Processed uploaded books:', processedUploadedBooks); // Debug log
+                
+                allBooksData = [...defaultBooks, ...processedUploadedBooks];
+                
+                // Update statistics
+                document.getElementById('totalCount').textContent = allBooksData.length;
+                document.getElementById('uploadedCount').textContent = processedUploadedBooks.length;
+                
+                displayBooks(allBooksData);
+                
+            } catch (error) {
+                console.error('Error loading books:', error);
+                // Fallback to default books only
+                allBooksData = [...defaultBooks];
+                document.getElementById('totalCount').textContent = defaultBooks.length;
+                document.getElementById('uploadedCount').textContent = 0;
+                displayBooks(allBooksData);
+                
+                // Show user-friendly error message
+                alert('업로드된 도서 데이터를 불러오는 중 오류가 발생했습니다. 기본 도서만 표시됩니다.');
+            }
+        }
+
+        function displayBooks(books) {
+            const grid = document.getElementById('allBooksGrid');
+            
+            if (!books || books.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📚 등록된 도서가 없습니다</h3>
+                        <p>새로운 도서를 업로드해보세요!</p>
+                        <br>
+                        <a href="admin-multilingual.html" style="background: #2563eb; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 8px;">📝 도서 업로드하기</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                grid.innerHTML = books.map(book => {
+                    // Sanitize data for safe HTML insertion
+                    const safeTitle = (book.title || '제목 없음').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+                    const safeAuthor = (book.author || '작가 미상').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+                    const safeDescription = (book.description || '설명이 없습니다.').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+                    const safeEmoji = book.emoji || '📖';
+                    const safeId = (book.id || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+                    const safeUrl = (book.url || '#').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+                    
+                    return `
+                        <div class="book-card">
+                            <div class="book-type ${book.type || 'default'}">${book.type === 'default' ? '기본 도서' : '업로드 도서'}</div>
+                            <div class="book-emoji">${safeEmoji}</div>
+                            <h3>${safeTitle}</h3>
+                            <p class="book-author">${safeAuthor}</p>
+                            <p class="book-description">${safeDescription}</p>
+                            <div class="book-actions">
+                                <button class="btn-read" onclick="readBook('${safeId}', '${safeUrl}')">
+                                    📖 읽기
+                                </button>
+                                ${book.type === 'uploaded' ? `
+                                    <button class="btn-edit" onclick="goToAdmin('${safeId}')" style="background: #10b981;">
+                                        ⚙️ 관리자에서 수정
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error displaying books:', error);
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>⚠️ 도서 표시 오류</h3>
+                        <p>도서 데이터를 표시하는 중 오류가 발생했습니다.</p>
+                        <br>
+                        <button onclick="location.reload()" style="background: #dc2626; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer;">🔄 새로고침</button>
+                    </div>
+                `;
+            }
+        }
+
+        function readBook(bookId, bookUrl) {
+            if (bookUrl && bookUrl !== '#') {
+                // For default books with predefined URLs
+                window.location.href = bookUrl;
+            } else {
+                // For uploaded books, show content if available
+                const book = allBooksData.find(b => b.id === bookId);
+                if (book && (book.content || (book.chapters && book.chapters.length > 0))) {
+                    // Open in improved reader with better mobile support
+                    localStorage.setItem('currentBook', JSON.stringify(book));
+                    window.location.href = 'reader-improved.html';
+                } else {
+                    const response = confirm(`"${book ? book.title : bookId}" 원고 내용이 아직 없습니다.\n\n관리자 페이지에서 내용을 추가하시겠습니까?`);
+                    if (response) {
+                        goToAdmin(bookId);
+                    }
+                }
+            }
+        }
+
+        function goToAdmin(bookId) {
+            // Store the book ID to edit in localStorage
+            localStorage.setItem('editBookId', bookId);
+            // Redirect to admin page
+            window.location.href = 'admin-multilingual.html';
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    displayBooks(allBooksData);
+                    return;
+                }
+                
+                const filteredBooks = allBooksData.filter(book => 
+                    book.title.toLowerCase().includes(query) ||
+                    book.author.toLowerCase().includes(query) ||
+                    (book.description && book.description.toLowerCase().includes(query))
+                );
+                
+                if (filteredBooks.length === 0) {
+                    document.getElementById('allBooksGrid').innerHTML = `
+                        <div class="no-results">
+                            <h3>🔍 검색 결과가 없습니다</h3>
+                            <p>"${query}"에 대한 검색 결과를 찾을 수 없습니다.</p>
+                        </div>
+                    `;
+                } else {
+                    displayBooks(filteredBooks);
+                }
+            });
+        }
+
+        // Note: Edit functionality moved to admin-multilingual.html
+
+        // Handle URL parameters for search
+        function handleUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('search');
+            if (searchQuery) {
+                document.getElementById('searchInput').value = searchQuery;
+                // Trigger search after books are loaded
+                setTimeout(() => {
+                    const event = new Event('input');
+                    document.getElementById('searchInput').dispatchEvent(event);
+                }, 100);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAllBooks();
+            setupSearch();
+            handleUrlParams();
+        });
+
+        // Note: Modal functionality moved to admin-multilingual.html
+
+        // Listen for storage changes (when new books are uploaded)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'uploadedBooks') {
+                loadAllBooks();
+            }
+        });
+    </script>
+</body>
+</html>

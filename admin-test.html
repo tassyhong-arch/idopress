@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이도 - 도서 업로드 관리자</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            border-color: #007bff;
+        }
+
+        .checkbox-item input:checked + span {
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .emoji-selector {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .emoji-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .emoji-btn:hover, .emoji-btn.selected {
+            border-color: #007bff;
+            background: #f8f9ff;
+            transform: scale(1.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .preview-section {
+            background: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .preview-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .book-preview {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .book-cover-preview {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .book-info-preview {
+            flex: 1;
+        }
+
+        .book-info-preview h4 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .book-info-preview p {
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+
+        .language-tags-preview {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .lang-tag-preview {
+            background: #e7f3ff;
+            color: #007bff;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .uploaded-books {
+            margin-top: 30px;
+        }
+
+        .uploaded-books h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .uploaded-book-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .uploaded-book-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .uploaded-book-emoji {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .emoji-selector {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .book-preview {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .checkbox-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 이도 도서 업로드</h1>
+            <p>새로운 전자책을 디지털 도서관에 추가하세요</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 홈</a>
+            <a href="admin-test.html" class="nav-link active">🧪 테스트 업로드</a>
+            <a href="admin-simple.html" class="nav-link">🚀 간편 업로드</a>
+            <a href="admin-multilingual.html" class="nav-link">⚙️ 고급 관리</a>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="form-section">
+            <h2>📖 도서 기본 정보</h2>
+            
+            <div class="form-group">
+                <label for="bookTitle">도서 제목 *</label>
+                <input type="text" id="bookTitle" class="form-control" placeholder="예: 홍길동전" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookAuthor">저자</label>
+                <input type="text" id="bookAuthor" class="form-control" placeholder="예: 작자 미상" value="작자 미상">
+            </div>
+
+            <div class="form-group">
+                <label for="bookDescription">도서 소개</label>
+                <textarea id="bookDescription" class="form-control" placeholder="이 책에 대한 간단한 소개를 작성해주세요..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="bookCategory">카테고리</label>
+                <select id="bookCategory" class="form-control">
+                    <option value="classical">📜 고전문학</option>
+                    <option value="novel">📖 소설</option>
+                    <option value="poetry">🎭 시가</option>
+                    <option value="history">📚 역사</option>
+                    <option value="modern">🏛️ 현대문학</option>
+                    <option value="essay">✍️ 수필</option>
+                    <option value="other">🔗 기타</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>지원 언어 *</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="languages" value="korean" checked>
+                        <span>🇰🇷 한국어</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="languages" value="english">
+                        <span>🇺🇸 English</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="languages" value="japanese">
+                        <span>🇯🇵 日本語</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="languages" value="spanish">
+                        <span>🇪🇸 Español</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>도서 아이콘 선택</label>
+                <div class="emoji-selector">
+                    <button type="button" class="emoji-btn selected" data-emoji="📖">📖</button>
+                    <button type="button" class="emoji-btn" data-emoji="📚">📚</button>
+                    <button type="button" class="emoji-btn" data-emoji="📜">📜</button>
+                    <button type="button" class="emoji-btn" data-emoji="🌸">🌸</button>
+                    <button type="button" class="emoji-btn" data-emoji="🌊">🌊</button>
+                    <button type="button" class="emoji-btn" data-emoji="🏠">🏠</button>
+                    <button type="button" class="emoji-btn" data-emoji="💕">💕</button>
+                    <button type="button" class="emoji-btn" data-emoji="⭐">⭐</button>
+                    <button type="button" class="emoji-btn" data-emoji="🌙">🌙</button>
+                    <button type="button" class="emoji-btn" data-emoji="🌺">🌺</button>
+                    <button type="button" class="emoji-btn" data-emoji="🎭">🎭</button>
+                    <button type="button" class="emoji-btn" data-emoji="🗡️">🗡️</button>
+                    <button type="button" class="emoji-btn" data-emoji="👑">👑</button>
+                    <button type="button" class="emoji-btn" data-emoji="🏯">🏯</button>
+                    <button type="button" class="emoji-btn" data-emoji="🎋">🎋</button>
+                    <button type="button" class="emoji-btn" data-emoji="🔮">🔮</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>📝 도서 내용</h2>
+            
+            <div class="form-group">
+                <label for="bookContent">본문 내용 *</label>
+                <textarea id="bookContent" class="form-control" placeholder="도서의 전체 내용을 입력하세요..." style="min-height: 200px;" required></textarea>
+                <small style="color: #6c757d; display: block; margin-top: 8px;">
+                    💡 팁: 각 장이나 단락을 구분하려면 빈 줄을 두 개 이상 사용하세요.
+                </small>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h3>🔍 미리보기</h3>
+            <div class="book-preview" id="bookPreview">
+                <div class="book-cover-preview" id="previewEmoji">📖</div>
+                <div class="book-info-preview">
+                    <h4 id="previewTitle">도서 제목을 입력하세요</h4>
+                    <p id="previewAuthor">작자 미상</p>
+                    <p id="previewDescription">도서 소개를 입력하세요</p>
+                    <p id="previewCategory">📜 고전문학</p>
+                    <div class="language-tags-preview" id="previewLanguages">
+                        <span class="lang-tag-preview">🇰🇷</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn" onclick="uploadBook()">
+            <span>📚</span>
+            <span>도서 업로드</span>
+        </button>
+
+        <div class="uploaded-books">
+            <h3>📋 업로드된 도서 목록</h3>
+            <div id="uploadedBooksList">
+                <p style="color: #6c757d; text-align: center; padding: 20px;">아직 업로드된 도서가 없습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedEmoji = '📖';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEmojiSelector();
+            setupFormListeners();
+            loadUploadedBooks();
+        });
+
+        // Emoji selector functionality
+        function setupEmojiSelector() {
+            document.querySelectorAll('.emoji-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedEmoji = this.dataset.emoji;
+                    updatePreview();
+                });
+            });
+        }
+
+        // Form listeners for real-time preview
+        function setupFormListeners() {
+            const inputs = ['bookTitle', 'bookAuthor', 'bookDescription', 'bookCategory'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', updatePreview);
+            });
+
+            document.querySelectorAll('input[name="languages"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updatePreview);
+            });
+        }
+
+        // Update preview
+        function updatePreview() {
+            const title = document.getElementById('bookTitle').value || '도서 제목을 입력하세요';
+            const author = document.getElementById('bookAuthor').value || '작자 미상';
+            const description = document.getElementById('bookDescription').value || '도서 소개를 입력하세요';
+            const category = document.getElementById('bookCategory');
+            const selectedOption = category.options[category.selectedIndex];
+            
+            document.getElementById('previewEmoji').textContent = selectedEmoji;
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewAuthor').textContent = author;
+            document.getElementById('previewDescription').textContent = description;
+            document.getElementById('previewCategory').textContent = selectedOption.text;
+
+            // Update languages
+            const selectedLanguages = Array.from(document.querySelectorAll('input[name="languages"]:checked'));
+            const languageFlags = {
+                'korean': '🇰🇷',
+                'english': '🇺🇸',
+                'japanese': '🇯🇵',
+                'spanish': '🇪🇸'
+            };
+
+            const languagesHtml = selectedLanguages.map(lang => 
+                `<span class="lang-tag-preview">${languageFlags[lang.value]}</span>`
+            ).join('');
+
+            document.getElementById('previewLanguages').innerHTML = languagesHtml;
+        }
+
+        // Upload book function
+        function uploadBook() {
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const description = document.getElementById('bookDescription').value.trim();
+            const category = document.getElementById('bookCategory').value;
+            const content = document.getElementById('bookContent').value.trim();
+            
+            // Validation
+            if (!title) {
+                showAlert('도서 제목을 입력해주세요.', 'error');
+                return;
+            }
+
+            if (!content) {
+                showAlert('도서 내용을 입력해주세요.', 'error');
+                return;
+            }
+
+            const selectedLanguages = Array.from(document.querySelectorAll('input[name="languages"]:checked'))
+                .map(cb => cb.value);
+
+            if (selectedLanguages.length === 0) {
+                showAlert('최소 하나의 언어를 선택해주세요.', 'error');
+                return;
+            }
+
+            // Create book object - 전체 내용 보존
+            const book = {
+                id: generateBookId(title),
+                title: title,
+                author: author || '작자 미상',
+                description: description,
+                category: category,
+                languages: selectedLanguages,
+                emoji: selectedEmoji,
+                content: content, // 전체 원본 내용 보존
+                koreanContent: content, // 한국어 내용으로 저장
+                dateAdded: new Date().toISOString().split('T')[0],
+                progress: 0,
+                chapters: parseContent(content)
+            };
+
+            // Save to localStorage
+            try {
+                let uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+                
+                // Check for duplicate titles
+                if (uploadedBooks.some(b => b.title === title)) {
+                    showAlert('같은 제목의 도서가 이미 존재합니다.', 'error');
+                    return;
+                }
+
+                uploadedBooks.push(book);
+                localStorage.setItem('uploadedBooks', JSON.stringify(uploadedBooks));
+                
+                showAlert(`"${title}" 도서가 성공적으로 업로드되었습니다! 📚`, 'success');
+                
+                // Clear form
+                clearForm();
+                
+                // Refresh uploaded books list
+                loadUploadedBooks();
+                
+                // Update homepage book list if it exists
+                if (window.refreshBookList) {
+                    window.refreshBookList();
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('업로드 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            }
+        }
+
+        // Generate unique book ID
+        function generateBookId(title) {
+            return title.toLowerCase()
+                .replace(/[^a-zA-Z0-9가-힣]/g, '')
+                .substring(0, 20) + '_' + Date.now();
+        }
+
+        // ⭐ 개선된 내용 파싱: 전체 내용 보존
+        function parseContent(content) {
+            if (!content || content.trim() === '') {
+                return [{
+                    id: 1,
+                    title: '내용 없음',
+                    content: '이 도서는 아직 내용이 입력되지 않았습니다.'
+                }];
+            }
+            
+            // 더 긴 단락 유지 (기존보다 훨씬 긴 단락으로)
+            const maxChapterLength = 8000; // 8000자까지 한 챕터로
+            
+            // 먼저 더블 라인브레이크로 분할
+            let chapters = content.split(/\n\s*\n\s*\n/).filter(chapter => chapter.trim());
+            
+            // 만약 챕터가 하나밖에 없고 너무 길면 분할
+            if (chapters.length === 1 && chapters[0].length > maxChapterLength) {
+                const longContent = chapters[0];
+                chapters = [];
+                
+                // 문단 단위로 분할 시도
+                const paragraphs = longContent.split(/\n\s*\n/).filter(p => p.trim());
+                let currentChapter = '';
+                
+                paragraphs.forEach(paragraph => {
+                    if (currentChapter.length + paragraph.length > maxChapterLength && currentChapter) {
+                        chapters.push(currentChapter.trim());
+                        currentChapter = paragraph;
+                    } else {
+                        currentChapter += (currentChapter ? '\n\n' : '') + paragraph;
+                    }
+                });
+                
+                if (currentChapter.trim()) {
+                    chapters.push(currentChapter.trim());
+                }
+            }
+            
+            return chapters.map((chapter, index) => ({
+                id: index + 1,
+                title: `${index + 1}장`,
+                content: chapter // trim() 제거로 전체 내용 보존
+            }));
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '작자 미상';
+            document.getElementById('bookDescription').value = '';
+            document.getElementById('bookContent').value = '';
+            document.getElementById('bookCategory').selectedIndex = 0;
+            
+            // Reset language checkboxes
+            document.querySelectorAll('input[name="languages"]').forEach(cb => {
+                cb.checked = cb.value === 'korean';
+            });
+            
+            // Reset emoji selector
+            document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelector('.emoji-btn[data-emoji="📖"]').classList.add('selected');
+            selectedEmoji = '📖';
+            
+            updatePreview();
+        }
+
+        // Load and display uploaded books
+        function loadUploadedBooks() {
+            const uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+            const container = document.getElementById('uploadedBooksList');
+            
+            if (uploadedBooks.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 20px;">아직 업로드된 도서가 없습니다.</p>';
+                return;
+            }
+
+            const booksHtml = uploadedBooks.map(book => `
+                <div class="uploaded-book-item">
+                    <div class="uploaded-book-info">
+                        <div class="uploaded-book-emoji">${book.emoji}</div>
+                        <div>
+                            <strong>${book.title}</strong><br>
+                            <small style="color: #6c757d;">${book.author} | ${book.dateAdded}</small>
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteBook('${book.id}')">삭제</button>
+                </div>
+            `).join('');
+
+            container.innerHTML = booksHtml;
+        }
+
+        // Delete book
+        function deleteBook(bookId) {
+            if (!confirm('정말로 이 도서를 삭제하시겠습니까?')) {
+                return;
+            }
+
+            try {
+                let uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+                uploadedBooks = uploadedBooks.filter(book => book.id !== bookId);
+                localStorage.setItem('uploadedBooks', JSON.stringify(uploadedBooks));
+                
+                showAlert('도서가 삭제되었습니다.', 'success');
+                loadUploadedBooks();
+                
+                // Update homepage book list if it exists
+                if (window.refreshBookList) {
+                    window.refreshBookList();
+                }
+                
+            } catch (error) {
+                console.error('Delete error:', error);
+                showAlert('삭제 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 
+                              type === 'error' ? 'alert-error' : 'alert-info';
+            
+            const alertHtml = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHtml;
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Test localStorage functionality
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Show info about localStorage support
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!testLocalStorage()) {
+                showAlert('⚠️ 브라우저에서 로컬 저장소를 지원하지 않습니다. 업로드된 도서가 저장되지 않을 수 있습니다.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

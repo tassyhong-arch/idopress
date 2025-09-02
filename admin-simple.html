@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이도 - 간편 업로드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: #28a745;
+            color: white;
+        }
+
+        .quick-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(40,167,69,0.3);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 간편 업로드</h1>
+            <p>빠르고 쉽게 도서를 업로드하세요</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 홈</a>
+            <a href="admin-test.html" class="nav-link">🧪 테스트 업로드</a>
+            <a href="admin-simple.html" class="nav-link active">🚀 간편 업로드</a>
+            <a href="admin-multilingual.html" class="nav-link">⚙️ 고급 관리</a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>빠른 업로드</h3>
+                <p>제목과 내용만으로 즉시 업로드</p>
+            </div>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="quick-form">
+            <div class="form-group">
+                <label for="quickTitle">📖 도서 제목</label>
+                <input type="text" id="quickTitle" class="form-control" placeholder="예: 홍길동전" required>
+            </div>
+
+            <div class="form-group">
+                <label for="quickContent">📝 도서 내용</label>
+                <textarea id="quickContent" class="form-control" placeholder="도서의 전체 내용을 입력하세요..." required></textarea>
+            </div>
+
+            <button type="button" class="btn" onclick="quickUpload()">
+                <span>🚀</span>
+                <span>바로 업로드</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function quickUpload() {
+            const title = document.getElementById('quickTitle').value.trim();
+            const content = document.getElementById('quickContent').value.trim();
+            
+            // Validation
+            if (!title) {
+                showAlert('도서 제목을 입력해주세요.', 'error');
+                return;
+            }
+
+            if (!content) {
+                showAlert('도서 내용을 입력해주세요.', 'error');
+                return;
+            }
+
+            // Create book object with default values
+            const book = {
+                id: generateBookId(title),
+                title: title,
+                author: '작자 미상',
+                description: `${title}의 내용입니다.`,
+                category: 'classical',
+                languages: ['korean'],
+                emoji: '📖',
+                content: content,
+                dateAdded: new Date().toISOString().split('T')[0],
+                progress: 0,
+                chapters: parseContent(content)
+            };
+
+            // Save to localStorage
+            try {
+                let uploadedBooks = JSON.parse(localStorage.getItem('uploadedBooks') || '[]');
+                
+                // Check for duplicate titles
+                if (uploadedBooks.some(b => b.title === title)) {
+                    showAlert('같은 제목의 도서가 이미 존재합니다.', 'error');
+                    return;
+                }
+
+                uploadedBooks.push(book);
+                localStorage.setItem('uploadedBooks', JSON.stringify(uploadedBooks));
+                
+                showAlert(`"${title}" 도서가 성공적으로 업로드되었습니다! 🎉`, 'success');
+                
+                // Clear form
+                document.getElementById('quickTitle').value = '';
+                document.getElementById('quickContent').value = '';
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('업로드 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            }
+        }
+
+        // Generate unique book ID
+        function generateBookId(title) {
+            return title.toLowerCase()
+                .replace(/[^a-zA-Z0-9가-힣]/g, '')
+                .substring(0, 20) + '_' + Date.now();
+        }
+
+        // Parse content into chapters
+        function parseContent(content) {
+            const chapters = content.split(/\n\s*\n\s*\n/).filter(chapter => chapter.trim());
+            return chapters.map((chapter, index) => ({
+                id: index + 1,
+                title: `${index + 1}장`,
+                content: chapter.trim()
+            }));
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            const alertHtml = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHtml;
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

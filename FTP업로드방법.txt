@@ -1,0 +1,51 @@
+# 📦 이도 - FTP 업로드 완성본
+
+## 파일 정보
+📁 파일명: 이도-FTP업로드-완성본-20250902.zip
+📏 크기: 40KB (압축) / 약 150KB (압축 해제)
+📂 포함 파일: 13개
+
+## 📋 포함된 파일 목록
+
+### 🏠 메인 페이지
+✅ index.html - 모바일 최적화 도서관 홈페이지
+
+### 📚 도서 관련
+✅ books.html - 기본 도서 목록
+✅ books-dynamic.html - 전체 도서 목록 (업로드 연동)
+✅ about.html - 도서관 소개
+
+### 📖 독서 페이지
+✅ read-chunhyang.html - 춘향전
+✅ read-simcheong.html - 심청전  
+✅ read-heungbu.html - 흥부전
+✅ reader-natural.html - 자연스러운 리더
+
+### ⚙️ 관리자 페이지
+✅ admin-test.html - 완전 기능 업로드
+✅ admin-simple.html - 간단 업로드
+✅ admin-multilingual.html - 다국어 업로드
+
+### 🎨 스타일 & 스크립트
+✅ styles.css - 스타일시트
+✅ scripts.js - JavaScript
+
+## 🚀 업로드 방법
+
+1. ZIP 파일을 다운로드하세요
+2. 압축을 해제하세요
+3. FTP 프로그램으로 웹서버에 업로드하세요
+   - 보통 public_html 또는 www 폴더에 업로드
+4. 완료! 바로 사용 가능합니다
+
+## 📱 특징
+✨ 스마트폰/태블릿 완전 최적화
+✨ 터치 친화적 인터페이스
+✨ 4개 언어 지원 (한/영/일/스페인어)
+✨ 자연스러운 페이지 넘김
+✨ 실시간 도서 업로드 가능
+
+## 🎯 접속 주소
+업로드 후: https://yourdomain.com/index.html
+
+끝! 간단하죠? 😊

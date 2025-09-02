@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - LocalStorage 검사</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .debug-section h2 {
+            color: #2563eb;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        
+        .json-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #1d4ed8;
+        }
+        
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 LocalStorage 디버그 도구</h1>
+    
+    <div class="debug-section">
+        <h2>📊 통계 정보</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <h3>전체 도서</h3>
+                <div class="value" id="totalBooks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>기본 도서</h3>
+                <div class="value">3</div>
+            </div>
+            <div class="stat-card">
+                <h3>업로드 도서</h3>
+                <div class="value" id="uploadedBooks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>LocalStorage 크기</h3>
+                <div class="value" id="storageSize">0 KB</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>📚 업로드된 도서 데이터 (Raw JSON)</h2>
+        <button class="btn" onclick="refreshData()">🔄 새로고침</button>
+        <button class="btn btn-danger" onclick="clearUploadedBooks()">🗑️ 업로드 도서 모두 삭제</button>
+        <div class="json-display" id="rawData">데이터를 로딩 중...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔧 도서 구조 분석</h2>
+        <div id="bookAnalysis">분석 중...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🚨 잠재적 문제점</h2>
+        <div id="issueAnalysis">문제를 확인하는 중...</div>
+    </div>
+
+    <script>
+        // Default books for comparison
+        const defaultBooks = [
+            {
+                id: 'chunhyang',
+                title: '춘향전',
+                author: '작자 미상',
+                emoji: '🌸',
+                description: '사랑과 의리가 만나는 조선시대 최고의 로맨스',
+                url: 'read-chunhyang.html',
+                type: 'default'
+            },
+            {
+                id: 'simcheong',
+                title: '심청전',
+                author: '작자 미상', 
+                emoji: '🌊',
+                description: '효심으로 가득한 딸의 감동적인 희생과 사랑',
+                url: 'read-simcheong.html',
+                type: 'default'
+            },
+            {
+                id: 'heungbu',
+                title: '흥부전',
+                author: '작자 미상',
+                emoji: '🏠', 
+                description: '착함과 욕심의 대비로 보는 인생의 교훈',
+                url: 'read-heungbu.html',
+                type: 'default'
+            }
+        ];
+
+        function refreshData() {
+            try {
+                // Get raw localStorage data
+                const rawUploadedBooks = localStorage.getItem('uploadedBooks');
+                const uploadedBooksData = JSON.parse(rawUploadedBooks || '[]');
+                
+                // Update statistics
+                document.getElementById('totalBooks').textContent = defaultBooks.length + uploadedBooksData.length;
+                document.getElementById('uploadedBooks').textContent = uploadedBooksData.length;
+                
+                // Calculate storage size
+                const storageSize = new Blob([rawUploadedBooks || '']).size;
+                document.getElementById('storageSize').textContent = (storageSize / 1024).toFixed(1) + ' KB';
+                
+                // Display raw data
+                document.getElementById('rawData').textContent = JSON.stringify(uploadedBooksData, null, 2);
+                
+                // Analyze book structure
+                analyzeBookStructure(uploadedBooksData);
+                
+                // Check for issues
+                checkForIssues(uploadedBooksData);
+                
+            } catch (error) {
+                document.getElementById('rawData').textContent = '오류: ' + error.message;
+                console.error('Debug error:', error);
+            }
+        }
+        
+        function analyzeBookStructure(books) {
+            let analysis = '<div style="font-family: monospace; font-size: 0.9rem;">';
+            
+            if (books.length === 0) {
+                analysis += '<p style="color: #dc2626;">❌ 업로드된 도서가 없습니다.</p>';
+            } else {
+                books.forEach((book, index) => {
+                    analysis += `<div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 3px solid #2563eb;">`;
+                    analysis += `<strong>도서 ${index + 1}:</strong><br>`;
+                    analysis += `• ID: ${book.id || '❌ 없음'}<br>`;
+                    analysis += `• 제목: ${book.title || '❌ 없음'}<br>`;
+                    analysis += `• 작가: ${book.author || '❌ 없음'}<br>`;
+                    analysis += `• 이모지: ${book.emoji || '❌ 없음'}<br>`;
+                    analysis += `• 설명: ${book.description ? (book.description.length > 50 ? book.description.substring(0, 50) + '...' : book.description) : '❌ 없음'}<br>`;
+                    analysis += `• 내용: ${book.content ? '✅ 있음 (' + book.content.length + '자)' : '❌ 없음'}<br>`;
+                    analysis += `• 다국어: ${book.multilingual ? '✅ 있음' : '❌ 없음'}<br>`;
+                    analysis += `• URL: ${book.url || '❌ 없음'}<br>`;
+                    analysis += `• 타입: ${book.type || '❌ 없음'}<br>`;
+                    analysis += `</div>`;
+                });
+            }
+            
+            analysis += '</div>';
+            document.getElementById('bookAnalysis').innerHTML = analysis;
+        }
+        
+        function checkForIssues(books) {
+            let issues = [];
+            
+            if (books.length === 0) {
+                issues.push('업로드된 도서가 없습니다. 관리자 페이지에서 도서를 업로드해보세요.');
+            }
+            
+            books.forEach((book, index) => {
+                if (!book.id) {
+                    issues.push(`도서 ${index + 1}: ID가 없습니다.`);
+                }
+                if (!book.title) {
+                    issues.push(`도서 ${index + 1}: 제목이 없습니다.`);
+                }
+                if (!book.author) {
+                    issues.push(`도서 ${index + 1}: 작가가 없습니다.`);
+                }
+                if (!book.content && !book.url) {
+                    issues.push(`도서 ${index + 1}: 내용도 없고 URL도 없습니다.`);
+                }
+                if (!book.type) {
+                    issues.push(`도서 ${index + 1}: 타입이 지정되지 않았습니다.`);
+                }
+            });
+            
+            let issuesHtml = '';
+            if (issues.length === 0) {
+                issuesHtml = '<p style="color: #16a34a;">✅ 발견된 문제가 없습니다!</p>';
+            } else {
+                issuesHtml = '<ul>';
+                issues.forEach(issue => {
+                    issuesHtml += `<li style="color: #dc2626; margin: 5px 0;">❌ ${issue}</li>`;
+                });
+                issuesHtml += '</ul>';
+            }
+            
+            document.getElementById('issueAnalysis').innerHTML = issuesHtml;
+        }
+        
+        function clearUploadedBooks() {
+            if (confirm('정말로 모든 업로드된 도서를 삭제하시겠습니까?')) {
+                localStorage.removeItem('uploadedBooks');
+                alert('모든 업로드된 도서가 삭제되었습니다.');
+                refreshData();
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', refreshData);
+    </script>
+</body>
+</html>
